@@ -1,0 +1,624 @@
+"""
+Backtesting Engine
+Validate trading signals against historical price data
+"""
+
+import asyncio
+from typing import List, Dict, Any, Optional, Tuple
+from datetime import datetime, timedelta
+from dataclasses import dataclass
+from collections import defaultdict
+import statistics
+
+from app.schemas import (
+    TradingSignal,
+    BacktestResult,
+    SignalDirection,
+    CurrencyPair
+)
+from app.database import get_mongodb, get_influxdb
+
+
+@dataclass
+class Trade:
+    """Represents a single trade"""
+    entry_time: datetime
+    exit_time: Optional[datetime]
+    currency_pair: str
+    direction: SignalDirection
+    entry_price: float
+    exit_price: Optional[float]
+    pnl: Optional[float]
+    pnl_percentage: Optional[float]
+    holding_period: Optional[timedelta]
+    signal_strength: float
+    signal_confidence: float
+    reasoning: str
+
+
+@dataclass
+class PriceData:
+    """OHLCV price data"""
+    timestamp: datetime
+    open: float
+    high: float
+    low: float
+    close: float
+    volume: float
+
+
+class PriceDataFetcher:
+    """Fetch historical price data for backtesting"""
+
+    def __init__(self):
+        self.mongodb = None
+        self.influxdb = None
+
+    async def fetch_price_data(
+        self,
+        currency_pair: str,
+        start_date: datetime,
+        end_date: datetime,
+        interval: str = "1h"
+    ) -> List[PriceData]:
+        """Fetch historical price data for a currency pair"""
+        try:
+            # Try to get from InfluxDB first
+            influxdb = get_influxdb()
+            if influxdb:
+                return await self._fetch_from_influxdb(
+                    influxdb,
+                    currency_pair,
+                    start_date,
+                    end_date,
+                    interval
+                )
+
+            # Fallback to MongoDB
+            mongodb = get_mongodb()
+            if mongodb:
+                return await self._fetch_from_mongodb(
+                    mongodb,
+                    currency_pair,
+                    start_date,
+                    end_date,
+                    interval
+                )
+
+            # No data available
+            return []
+
+        except Exception as e:
+            print(f"Error fetching price data: {e}")
+            return []
+
+    async def _fetch_from_influxdb(
+        self,
+        influxdb,
+        currency_pair: str,
+        start_date: datetime,
+        end_date: datetime,
+        interval: str
+    ) -> List[PriceData]:
+        """Fetch price data from InfluxDB"""
+        try:
+            query = f'''
+            from(bucket: "forex_prices")
+              |> range(start: {start_date.isoformat()}Z, stop: {end_date.isoformat()}Z)
+              |> filter(fn: (r) => r["_measurement"] == "ohlc")
+              |> filter(fn: (r) => r["pair"] == "{currency_pair}")
+              |> filter(fn: (r) => r["_field"] == "close")
+              |> aggregateWindow(every: {interval}, fn: last, createEmpty: false)
+            '''
+
+            result = influxdb.query(query)
+
+            price_data = []
+            for table in result:
+                for record in table.records:
+                    price_data.append(PriceData(
+                        timestamp=record.get_time(),
+                        open=record.values.get("open", 0),
+                        high=record.values.get("high", 0),
+                        low=record.values.get("low", 0),
+                        close=record.values.get("close", 0),
+                        volume=record.values.get("volume", 0)
+                    ))
+
+            return price_data
+
+        except Exception as e:
+            print(f"Error fetching from InfluxDB: {e}")
+            return []
+
+    async def _fetch_from_mongodb(
+        self,
+        mongodb,
+        currency_pair: str,
+        start_date: datetime,
+        end_date: datetime,
+        interval: str
+    ) -> List[PriceData]:
+        """Fetch price data from MongoDB"""
+        try:
+            # For demo purposes, generate synthetic price data
+            # In production, this would fetch from a real data source
+            return self._generate_synthetic_price_data(
+                currency_pair,
+                start_date,
+                end_date,
+                interval
+            )
+
+        except Exception as e:
+            print(f"Error fetching from MongoDB: {e}")
+            return []
+
+    def _generate_synthetic_price_data(
+        self,
+        currency_pair: str,
+        start_date: datetime,
+        end_date: datetime,
+        interval: str
+    ) -> List[PriceData]:
+        """Generate synthetic price data for testing"""
+        price_data = []
+
+        # Base prices for different pairs
+        base_prices = {
+            "EUR/USD": 1.08,
+            "GBP/USD": 1.26,
+            "USD/JPY": 150.0,
+            "USD/CHF": 0.88,
+            "AUD/USD": 0.65,
+            "USD/CAD": 1.36
+        }
+
+        base_price = base_prices.get(currency_pair, 1.0)
+
+        # Generate data points
+        current_time = start_date
+        current_price = base_price
+
+        while current_time <= end_date:
+            # Random walk
+            change = (hash(str(current_time)) % 100 - 50) / 10000 * base_price
+            current_price += change
+
+            # Ensure price stays positive
+            current_price = max(current_price, base_price * 0.9)
+            current_price = min(current_price, base_price * 1.1)
+
+            # Generate OHLCV
+            high = current_price + abs(change) * 0.5
+            low = current_price - abs(change) * 0.5
+            open_price = current_price - change * 0.5
+            close_price = current_price
+            volume = abs(hash(str(current_time))) % 1000
+
+            price_data.append(PriceData(
+                timestamp=current_time,
+                open=open_price,
+                high=high,
+                low=low,
+                close=close_price,
+                volume=volume
+            ))
+
+            # Move to next interval
+            if interval == "1h":
+                current_time += timedelta(hours=1)
+            elif interval == "4h":
+                current_time += timedelta(hours=4)
+            elif interval == "1d":
+                current_time += timedelta(days=1)
+            else:
+                current_time += timedelta(hours=1)
+
+        return price_data
+
+
+class TradeExecutor:
+    """Execute trades based on signals"""
+
+    def __init__(self, risk_per_trade: float = 0.02):
+        self.risk_per_trade = risk_per_trade
+
+    def execute_trade(
+        self,
+        signal: TradingSignal,
+        entry_price: float,
+        initial_capital: float
+    ) -> Trade:
+        """Execute a trade based on a signal"""
+        return Trade(
+            entry_time=signal.timestamp,
+            exit_time=None,
+            currency_pair=signal.currency_pair,
+            direction=signal.direction,
+            entry_price=entry_price,
+            exit_price=None,
+            pnl=None,
+            pnl_percentage=None,
+            holding_period=None,
+            signal_strength=signal.strength,
+            signal_confidence=signal.confidence,
+            reasoning=signal.reasoning
+        )
+
+    def close_trade(
+        self,
+        trade: Trade,
+        exit_price: float,
+        exit_time: datetime
+    ) -> Trade:
+        """Close a trade and calculate P&L"""
+        trade.exit_price = exit_price
+        trade.exit_time = exit_time
+        trade.holding_period = exit_time - trade.entry_time
+
+        # Calculate P&L
+        if trade.direction == SignalDirection.BUY:
+            price_change = exit_price - trade.entry_price
+        else:  # SELL
+            price_change = trade.entry_price - exit_price
+
+        trade.pnl = price_change
+        trade.pnl_percentage = (price_change / trade.entry_price) * 100
+
+        return trade
+
+
+class BacktestEngine:
+    """Main backtesting engine"""
+
+    def __init__(
+        self,
+        initial_capital: float = 10000.0,
+        risk_per_trade: float = 0.02,
+        max_holding_period: timedelta = timedelta(hours=24)
+    ):
+        self.initial_capital = initial_capital
+        self.risk_per_trade = risk_per_trade
+        self.max_holding_period = max_holding_period
+
+        self.price_fetcher = PriceDataFetcher()
+        self.trade_executor = TradeExecutor(risk_per_trade)
+
+    async def run_backtest(
+        self,
+        signals: List[TradingSignal],
+        start_date: datetime,
+        end_date: datetime,
+        interval: str = "1h"
+    ) -> BacktestResult:
+        """Run a backtest on a list of signals"""
+        if not signals:
+            return self._empty_result(start_date, end_date)
+
+        # Group signals by currency pair
+        signals_by_pair = defaultdict(list)
+        for signal in signals:
+            signals_by_pair[signal.currency_pair].append(signal)
+
+        # Run backtest for each pair
+        all_trades = []
+        capital = self.initial_capital
+
+        for currency_pair, pair_signals in signals_by_pair.items():
+            # Fetch price data
+            price_data = await self.price_fetcher.fetch_price_data(
+                currency_pair,
+                start_date,
+                end_date,
+                interval
+            )
+
+            if not price_data:
+                continue
+
+            # Create price lookup
+            price_lookup = {pd.timestamp: pd for pd in price_data}
+
+            # Execute trades
+            pair_trades = await self._execute_trades_for_pair(
+                pair_signals,
+                price_lookup,
+                capital
+            )
+
+            all_trades.extend(pair_trades)
+
+        # Calculate results
+        return self._calculate_results(
+            all_trades,
+            start_date,
+            end_date,
+            capital
+        )
+
+    async def _execute_trades_for_pair(
+        self,
+        signals: List[TradingSignal],
+        price_lookup: Dict[datetime, PriceData],
+        capital: float
+    ) -> List[Trade]:
+        """Execute trades for a specific currency pair"""
+        trades = []
+        open_trades = []
+
+        # Sort signals by timestamp
+        signals.sort(key=lambda s: s.timestamp)
+
+        for signal in signals:
+            # Skip HOLD signals
+            if signal.direction == SignalDirection.HOLD:
+                continue
+
+            # Find entry price
+            entry_price = self._find_price_at_time(
+                price_lookup,
+                signal.timestamp
+            )
+
+            if entry_price is None:
+                continue
+
+            # Execute trade
+            trade = self.trade_executor.execute_trade(
+                signal,
+                entry_price,
+                capital
+            )
+
+            open_trades.append(trade)
+
+            # Close existing trades that have exceeded max holding period
+            for open_trade in open_trades[:]:
+                if (signal.timestamp - open_trade.entry_time) > self.max_holding_period:
+                    exit_price = self._find_price_at_time(
+                        price_lookup,
+                        signal.timestamp
+                    )
+
+                    if exit_price:
+                        closed_trade = self.trade_executor.close_trade(
+                            open_trade,
+                            exit_price,
+                            signal.timestamp
+                        )
+                        trades.append(closed_trade)
+                        open_trades.remove(open_trade)
+
+        # Close remaining open trades
+        last_timestamp = max(price_lookup.keys()) if price_lookup else datetime.utcnow()
+
+        for open_trade in open_trades:
+            exit_price = self._find_price_at_time(
+                price_lookup,
+                last_timestamp
+            )
+
+            if exit_price:
+                closed_trade = self.trade_executor.close_trade(
+                    open_trade,
+                    exit_price,
+                    last_timestamp
+                )
+                trades.append(closed_trade)
+
+        return trades
+
+    def _find_price_at_time(
+        self,
+        price_lookup: Dict[datetime, PriceData],
+        target_time: datetime
+    ) -> Optional[float]:
+        """Find the price at or closest to a given time"""
+        # Find the closest price data point
+        closest_time = min(
+            price_lookup.keys(),
+            key=lambda t: abs((t - target_time).total_seconds())
+        )
+
+        # Only use if within 1 hour
+        if abs((closest_time - target_time).total_seconds()) <= 3600:
+            return price_lookup[closest_time].close
+
+        return None
+
+    def _calculate_results(
+        self,
+        trades: List[Trade],
+        start_date: datetime,
+        end_date: datetime,
+        initial_capital: float
+    ) -> BacktestResult:
+        """Calculate backtest results"""
+        if not trades:
+            return self._empty_result(start_date, end_date)
+
+        # Separate winning and losing trades
+        winning_trades = [t for t in trades if t.pnl and t.pnl > 0]
+        losing_trades = [t for t in trades if t.pnl and t.pnl < 0]
+
+        # Calculate total return
+        total_pnl = sum(t.pnl for t in trades if t.pnl is not None)
+        total_return = (total_pnl / initial_capital) * 100
+
+        # Calculate win rate
+        win_rate = len(winning_trades) / len(trades) * 100 if trades else 0
+
+        # Calculate average risk-reward ratio
+        avg_win = statistics.mean([t.pnl for t in winning_trades]) if winning_trades else 0
+        avg_loss = statistics.mean([abs(t.pnl) for t in losing_trades]) if losing_trades else 0
+        avg_risk_reward = avg_win / avg_loss if avg_loss > 0 else 0
+
+        # Calculate Sharpe ratio (simplified)
+        returns = [t.pnl_percentage for t in trades if t.pnl_percentage is not None]
+        sharpe_ratio = 0
+        if returns and len(returns) > 1:
+            avg_return = statistics.mean(returns)
+            std_return = statistics.stdev(returns)
+            sharpe_ratio = avg_return / std_return if std_return > 0 else 0
+
+        # Calculate maximum drawdown
+        cumulative_returns = []
+        running_capital = initial_capital
+
+        for trade in trades:
+            if trade.pnl is not None:
+                running_capital += trade.pnl
+                cumulative_returns.append((running_capital - initial_capital) / initial_capital)
+
+        max_drawdown = 0
+        peak = 0
+
+        for ret in cumulative_returns:
+            if ret > peak:
+                peak = ret
+            drawdown = peak - ret
+            if drawdown > max_drawdown:
+                max_drawdown = drawdown
+
+        # Calculate confidence calibration
+        confidence_calibration = self._calculate_confidence_calibration(trades)
+
+        return BacktestResult(
+            currency_pair="Multiple",
+            start_date=start_date,
+            end_date=end_date,
+            initial_capital=initial_capital,
+            final_capital=initial_capital + total_pnl,
+            total_return=total_return,
+            win_rate=win_rate,
+            average_risk_reward=avg_risk_reward,
+            sharpe_ratio=sharpe_ratio,
+            max_drawdown=max_drawdown,
+            total_trades=len(trades),
+            winning_trades=len(winning_trades),
+            losing_trades=len(losing_trades),
+            confidence_calibration=confidence_calibration
+        )
+
+    def _calculate_confidence_calibration(
+        self,
+        trades: List[Trade]
+    ) -> Dict[str, float]:
+        """Calculate confidence calibration metrics"""
+        if not trades:
+            return {}
+
+        # Group trades by confidence ranges
+        confidence_ranges = {
+            "0-20": [],
+            "20-40": [],
+            "40-60": [],
+            "60-80": [],
+            "80-100": []
+        }
+
+        for trade in trades:
+            confidence = trade.signal_confidence
+            if confidence <= 20:
+                confidence_ranges["0-20"].append(trade)
+            elif confidence <= 40:
+                confidence_ranges["20-40"].append(trade)
+            elif confidence <= 60:
+                confidence_ranges["40-60"].append(trade)
+            elif confidence <= 80:
+                confidence_ranges["60-80"].append(trade)
+            else:
+                confidence_ranges["80-100"].append(trade)
+
+        # Calculate win rate for each range
+        calibration = {}
+
+        for range_name, range_trades in confidence_ranges.items():
+            if range_trades:
+                winning = sum(1 for t in range_trades if t.pnl and t.pnl > 0)
+                win_rate = winning / len(range_trades) * 100
+                calibration[range_name] = win_rate
+
+        return calibration
+
+    def _empty_result(self, start_date: datetime, end_date: datetime) -> BacktestResult:
+        """Return empty backtest result"""
+        return BacktestResult(
+            currency_pair="N/A",
+            start_date=start_date,
+            end_date=end_date,
+            initial_capital=self.initial_capital,
+            final_capital=self.initial_capital,
+            total_return=0.0,
+            win_rate=0.0,
+            average_risk_reward=0.0,
+            sharpe_ratio=0.0,
+            max_drawdown=0.0,
+            total_trades=0,
+            winning_trades=0,
+            losing_trades=0,
+            confidence_calibration={}
+        )
+
+
+class BacktestService:
+    """Service for running backtests"""
+
+    def __init__(self):
+        self.engine = BacktestEngine()
+
+    async def run_backtest(
+        self,
+        currency_pair: Optional[str] = None,
+        start_date: Optional[datetime] = None,
+        end_date: Optional[datetime] = None,
+        initial_capital: float = 10000.0,
+        risk_per_trade: float = 0.02
+    ) -> BacktestResult:
+        """Run a backtest with specified parameters"""
+        # Set default dates
+        if not start_date:
+            start_date = datetime.utcnow() - timedelta(days=30)
+
+        if not end_date:
+            end_date = datetime.utcnow()
+
+        # Get signals from database
+        mongodb = get_mongodb()
+        if not mongodb:
+            raise Exception("Database not available")
+
+        # Build query
+        query = {
+            "timestamp": {"$gte": start_date, "$lte": end_date}
+        }
+
+        if currency_pair:
+            query["currency_pair"] = currency_pair
+
+        # Get signals
+        signals_data = await mongodb.signals.find(query).to_list(length=None)
+
+        # Convert to TradingSignal objects
+        signals = []
+        for signal_data in signals_data:
+            signals.append(TradingSignal(
+                currency_pair=signal_data["currency_pair"],
+                direction=SignalDirection(signal_data["direction"]),
+                strength=signal_data["strength"],
+                confidence=signal_data["confidence"],
+                timestamp=signal_data["timestamp"],
+                time_window=signal_data["time_window"],
+                reasoning=signal_data.get("reasoning", ""),
+                sentiment_score=signal_data.get("sentiment_score", 0),
+                volume=signal_data.get("volume", 0),
+                consensus_factor=signal_data.get("consensus_factor", 0),
+                supporting_headlines=signal_data.get("supporting_headlines", [])
+            ))
+
+        # Run backtest
+        engine = BacktestEngine(initial_capital, risk_per_trade)
+        result = await engine.run_backtest(signals, start_date, end_date)
+
+        return result
