@@ -16,7 +16,7 @@ influxdb-client==1.40.0
 
 # NLP and ML
 transformers==5.0.0rc3
-torch==2.1.2
+torch==2.8.0
 sentencepiece==0.1.99
 accelerate==0.26.1
 scikit-learn==1.4.0
