@@ -1,0 +1,66 @@
+# InfluxDB Initialization Script
+# This script sets up the initial configuration for InfluxDB
+
+# Note: InfluxDB 2.x uses a different initialization approach
+# The bucket and organization are created via environment variables in docker-compose.yml
+# This file documents the expected structure
+
+# Expected Bucket: "signals"
+# Expected Organization: "pippulse"
+
+# Measurement: "forex_signals"
+# Fields:
+#   - direction (string): "buy", "sell", "hold"
+#   - strength (float): 0-100
+#   - confidence (float): 0-100
+#   - sentiment_score (float): -1 to 1
+#   - volume (int): number of news items
+#   - consensus_factor (float): 0-1
+# Tags:
+#   - pair (string): currency pair (e.g., "EUR/USD")
+#   - time_window (string): "15min", "1hour", "4hour"
+#   - source (string): "newsapi", "twitter", "reddit", "telegram"
+
+# Measurement: "forex_prices"
+# Fields:
+#   - open (float)
+#   - high (float)
+#   - low (float)
+#   - close (float)
+#   - volume (float)
+# Tags:
+#   - pair (string): currency pair
+#   - interval (string): "1m", "5m", "15m", "1h", "4h", "1d"
+
+# Measurement: "sentiment_history"
+# Fields:
+#   - sentiment_score (float): -1 to 1
+#   - positive_count (int)
+#   - negative_count (int)
+#   - neutral_count (int)
+# Tags:
+#   - pair (string): currency pair
+#   - source (string): data source
+#   - time_window (string): aggregation window
+
+# Example Flux queries:
+
+# Get latest signals for all pairs:
+# from(bucket: "signals")
+#   |> range(start: -1h)
+#   |> filter(fn: (r) => r["_measurement"] == "forex_signals")
+#   |> last(column: "_time")
+
+# Get sentiment trend for a pair:
+# from(bucket: "signals")
+#   |> range(start: -24h)
+#   |> filter(fn: (r) => r["_measurement"] == "sentiment_history")
+#   |> filter(fn: (r) => r["pair"] == "EUR/USD")
+#   |> aggregateWindow(every: 1h, fn: mean)
+
+# Get signal history:
+# from(bucket: "signals")
+#   |> range(start: -7d)
+#   |> filter(fn: (r) => r["_measurement"] == "forex_signals")
+#   |> filter(fn: (r) => r["pair"] == "EUR/USD")
+#   |> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
