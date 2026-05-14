@@ -9,6 +9,7 @@ from datetime import datetime
 import asyncio
 
 from app.database import get_mongodb, get_redis, get_postgres, get_influxdb
+from app.api.websocket import manager as ws_manager
 
 router = APIRouter()
 
@@ -157,3 +158,23 @@ async def liveness_check() -> Dict[str, Any]:
         "status": "alive",
         "timestamp": datetime.utcnow().isoformat()
     }
+
+
+@router.get("/websocket/metrics")
+async def websocket_metrics() -> Dict[str, Any]:
+    """Get WebSocket connection metrics"""
+    return {
+        "timestamp": datetime.utcnow().isoformat(),
+        "websocket": ws_manager.get_metrics()
+    }
+
+
+@router.get("/websocket/connections")
+async def websocket_connections() -> Dict[str, Any]:
+    """Get current WebSocket connection count"""
+    return {
+        "timestamp": datetime.utcnow().isoformat(),
+        "active_connections": ws_manager.get_connection_count(),
+        "max_connections": len(ws_manager.active_connections)
+    }
+
