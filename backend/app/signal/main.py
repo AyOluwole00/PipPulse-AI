@@ -5,6 +5,7 @@ Orchestrates sentiment analysis and signal generation
 
 import asyncio
 import logging
+import json
 from typing import List, Optional
 from datetime import datetime, timedelta
 from collections import defaultdict
@@ -12,8 +13,22 @@ from collections import defaultdict
 from app.preprocessing import PreprocessingPipeline
 from app.sentiment import SentimentService
 from app.signal import SignalGenerator, SignalAggregator
-from app.database import get_mongodb, get_redis
+from app.database import (
+    connect_mongodb,
+    connect_redis,
+    connect_influxdb,
+    connect_postgres,
+    disconnect_mongodb,
+    disconnect_redis,
+    disconnect_influxdb,
+    disconnect_postgres,
+    get_mongodb,
+    get_redis,
+    get_influxdb_write_api,
+)
 from app.config import get_settings
+from app.services.config_service import get_system_config
+from influxdb_client import Point
 
 # Configure logging
 logging.basicConfig(
@@ -33,10 +48,18 @@ class SignalEngineRunner:
         self.signal_generator = None
         self.signal_aggregator = None
         self.running = False
+        self.last_stream_id = "0-0"
+        self.config_last_refresh: Optional[datetime] = None
+        self.cached_config = None
 
     async def initialize(self):
         """Initialize the signal engine components"""
         logger.info("Initializing signal engine...")
+
+        await connect_mongodb()
+        await connect_redis()
+        await connect_influxdb()
+        await connect_postgres()
 
         # Initialize sentiment service
         try:
@@ -64,7 +87,26 @@ class SignalEngineRunner:
             logger.error(f"Failed to initialize signal aggregator: {e}")
             raise
 
+        await self.refresh_config(force=True)
         logger.info("Signal engine initialized successfully")
+
+    async def refresh_config(self, force: bool = False):
+        """Refresh configuration from persistent storage"""
+        now = datetime.utcnow()
+        if not force and self.config_last_refresh and (now - self.config_last_refresh) < timedelta(minutes=5):
+            return
+
+        try:
+            config = await get_system_config()
+            self.cached_config = config
+            if self.signal_generator:
+                self.signal_generator.update_from_config(config)
+            if self.signal_aggregator:
+                self.signal_aggregator.generator.update_from_config(config)
+            self.config_last_refresh = now
+            logger.info("Signal engine configuration refreshed")
+        except Exception as e:
+            logger.error(f"Failed to refresh configuration: {e}")
 
     async def process_news_stream(self):
         """Process news from Redis stream"""
@@ -80,13 +122,18 @@ class SignalEngineRunner:
             logger.error("MongoDB not available")
             return
 
-        stream_key = "news_stream"
+        stream_key = self.settings.redis_stream_key
+
+        # Restore last processed ID if available
+        stored_id = await redis.get(f"{stream_key}:last_id")
+        if stored_id:
+            self.last_stream_id = stored_id
 
         while self.running:
             try:
                 # Read from stream
                 messages = await redis.xread(
-                    {stream_key: 0},
+                    {stream_key: self.last_stream_id},
                     count=10,
                     block=5000  # 5 second timeout
                 )
@@ -99,6 +146,8 @@ class SignalEngineRunner:
                         try:
                             # Process item
                             await self.process_news_item(fields, mongodb)
+                            self.last_stream_id = item_id
+                            await redis.set(f"{stream_key}:last_id", item_id)
                         except Exception as e:
                             logger.error(f"Error processing news item: {e}")
 
@@ -109,23 +158,29 @@ class SignalEngineRunner:
     async def process_news_item(self, fields: dict, mongodb):
         """Process a single news item"""
         try:
+            def _decode(value):
+                if value is None:
+                    return ""
+                if isinstance(value, bytes):
+                    return value.decode()
+                return str(value)
+
             # Extract fields
-            source = fields.get(b"source", b"").decode()
-            source_id = fields.get(b"source_id", b"").decode()
-            content = fields.get(b"content", b"").decode()
-            title = fields.get(b"title", b"").decode() or None
-            author = fields.get(b"author", b"").decode() or None
-            url = fields.get(b"url", b"").decode() or None
-            timestamp_str = fields.get(b"timestamp", b"").decode()
-            currency_pairs_str = fields.get(b"currency_pairs", b"").decode()
-            metadata_str = fields.get(b"metadata", b"").decode()
-            content_hash = fields.get(b"content_hash", b"").decode()
+            source = _decode(fields.get("source") or fields.get(b"source"))
+            source_id = _decode(fields.get("source_id") or fields.get(b"source_id"))
+            content = _decode(fields.get("content") or fields.get(b"content"))
+            title = _decode(fields.get("title") or fields.get(b"title")) or None
+            author = _decode(fields.get("author") or fields.get(b"author")) or None
+            url = _decode(fields.get("url") or fields.get(b"url")) or None
+            timestamp_str = _decode(fields.get("timestamp") or fields.get(b"timestamp"))
+            currency_pairs_str = _decode(fields.get("currency_pairs") or fields.get(b"currency_pairs"))
+            metadata_str = _decode(fields.get("metadata") or fields.get(b"metadata"))
+            content_hash = _decode(fields.get("content_hash") or fields.get(b"content_hash"))
 
             # Parse timestamp
             timestamp = datetime.fromisoformat(timestamp_str)
 
             # Parse currency pairs
-            import json
             currency_pairs = json.loads(currency_pairs_str) if currency_pairs_str else []
 
             # Parse metadata
@@ -144,6 +199,26 @@ class SignalEngineRunner:
                 currency_pairs=currency_pairs,
                 metadata=metadata,
                 content_hash=content_hash
+            )
+
+            # Store raw item
+            await mongodb.raw_news.update_one(
+                {"content_hash": raw_item.content_hash},
+                {
+                    "$set": {
+                        "source": raw_item.source.value,
+                        "source_id": raw_item.source_id,
+                        "content": raw_item.content,
+                        "title": raw_item.title,
+                        "author": raw_item.author,
+                        "url": str(raw_item.url) if raw_item.url else None,
+                        "timestamp": raw_item.timestamp,
+                        "currency_pairs": raw_item.currency_pairs,
+                        "metadata": raw_item.metadata,
+                        "content_hash": raw_item.content_hash,
+                    }
+                },
+                upsert=True
             )
 
             # Preprocess
@@ -165,7 +240,7 @@ class SignalEngineRunner:
                     "$set": {
                         "source": processed_item.source.value,
                         "source_id": processed_item.source_id,
-                        "content": processed_item.content,
+                        "content": processed_item.original_content,
                         "cleaned_content": processed_item.cleaned_content,
                         "title": processed_item.title,
                         "author": processed_item.author,
@@ -193,6 +268,27 @@ class SignalEngineRunner:
 
             logger.debug(f"Processed item: {source_id} - {sentiment_result.label.value}")
 
+            # Publish to realtime channel
+            redis = get_redis()
+            if redis:
+                payload = {
+                    "source": processed_item.source.value,
+                    "title": processed_item.title,
+                    "content": processed_item.original_content,
+                    "url": str(processed_item.url) if processed_item.url else None,
+                    "timestamp": processed_item.timestamp.isoformat(),
+                    "currency_pairs": processed_item.currency_pairs,
+                    "sentiment": {
+                        "label": sentiment_result.label.value,
+                        "confidence": sentiment_result.confidence,
+                        "probabilities": sentiment_result.probabilities,
+                        "timestamp": sentiment_result.timestamp.isoformat(),
+                        "model_name": sentiment_result.model_name,
+                        "pair_sentiment": sentiment_result.pair_sentiment
+                    }
+                }
+                await redis.publish("news", json.dumps(payload))
+
         except Exception as e:
             logger.error(f"Error processing news item: {e}")
 
@@ -207,6 +303,8 @@ class SignalEngineRunner:
 
         while self.running:
             try:
+                await self.refresh_config()
+
                 # Get recent news items with sentiment
                 start_time = datetime.utcnow() - timedelta(hours=4)
 
@@ -257,12 +355,16 @@ class SignalEngineRunner:
                     processed_items.append(processed_item)
                     sentiment_results.append(sentiment_result)
 
-                # Generate signals for all currency pairs
-                signals = self.signal_generator.generate_signals_for_all_pairs(
-                    sentiment_results,
-                    processed_items,
-                    time_window="1hour"
-                )
+                # Generate signals for all currency pairs and windows
+                signals = []
+                for window in ["15min", "1hour", "4hour"]:
+                    signals.extend(
+                        self.signal_generator.generate_signals_for_all_pairs(
+                            sentiment_results,
+                            processed_items,
+                            time_window=window
+                        )
+                    )
 
                 # Store signals
                 for signal in signals:
@@ -290,6 +392,45 @@ class SignalEngineRunner:
                         upsert=True
                     )
 
+                    # Write to InfluxDB
+                    write_api = get_influxdb_write_api()
+                    if write_api:
+                        point = (
+                            Point("signals")
+                            .tag("currency_pair", signal.currency_pair)
+                            .tag("time_window", signal.time_window)
+                            .tag("direction", signal.direction.value)
+                            .field("strength", float(signal.strength))
+                            .field("confidence", float(signal.confidence))
+                            .field("sentiment_score", float(signal.sentiment_score))
+                            .field("volume", int(signal.volume))
+                            .field("consensus_factor", float(signal.consensus_factor))
+                            .time(signal.timestamp)
+                        )
+                        write_api.write(
+                            bucket=self.settings.influxdb_bucket,
+                            org=self.settings.influxdb_org,
+                            record=point
+                        )
+
+                    # Publish to realtime channel
+                    redis = get_redis()
+                    if redis:
+                        payload = {
+                            "currency_pair": signal.currency_pair,
+                            "direction": signal.direction.value,
+                            "strength": signal.strength,
+                            "confidence": signal.confidence,
+                            "timestamp": signal.timestamp.isoformat(),
+                            "time_window": signal.time_window,
+                            "reasoning": signal.reasoning,
+                            "sentiment_score": signal.sentiment_score,
+                            "volume": signal.volume,
+                            "consensus_factor": signal.consensus_factor,
+                            "supporting_headlines": signal.supporting_headlines,
+                        }
+                        await redis.publish("signals", json.dumps(payload))
+
                     logger.info(f"Generated signal: {signal.currency_pair} - {signal.direction.value} (strength: {signal.strength:.1f}, confidence: {signal.confidence:.1f})")
 
                 # Wait before next signal generation
@@ -315,6 +456,10 @@ class SignalEngineRunner:
             logger.error(f"Error in signal engine: {e}")
         finally:
             self.running = False
+            await disconnect_mongodb()
+            await disconnect_redis()
+            await disconnect_influxdb()
+            await disconnect_postgres()
 
     def stop(self):
         """Stop the signal engine"""

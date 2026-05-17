@@ -41,6 +41,7 @@ class Settings(BaseSettings):
     )
     influxdb_org: str = Field(default="pippulse", env="INFLUXDB_ORG")
     influxdb_bucket: str = Field(default="signals", env="INFLUXDB_BUCKET")
+    influxdb_price_bucket: str = Field(default="forex_prices", env="INFLUXDB_PRICE_BUCKET")
 
     # API Keys
     newsapi_key: Optional[str] = Field(default=None, env="NEWSAPI_KEY")

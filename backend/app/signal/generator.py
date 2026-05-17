@@ -115,6 +115,10 @@ class SourceCredibilityWeighter:
         """Get weight for a source"""
         return self.weights.get(source.lower(), 0.5)
 
+    def update_weights(self, custom_weights: Dict[str, float]):
+        """Update source weights"""
+        self.weights.update(custom_weights)
+
     def apply_weight(self, sentiment: float, source: str) -> float:
         """Apply source weight to sentiment"""
         weight = self.get_weight(source)
@@ -259,6 +263,7 @@ class SignalGenerator:
     def __init__(self, config: Optional[SignalConfig] = None):
         self.settings = get_settings()
         self.config = config or SignalConfig(currency_pair="EUR/USD")
+        self.thresholds: Dict[str, SignalConfig] = {}
 
         # Initialize components
         self.time_decay = TimeDecayCalculator()
@@ -273,6 +278,32 @@ class SignalGenerator:
             TimeWindow("1hour", 60, self.settings.time_decay_lambda),
             TimeWindow("4hour", 240, self.settings.time_decay_lambda)
         ]
+
+    def update_from_config(self, config: Dict[str, Any]):
+        """Update generator configuration from persisted config"""
+        signal_config = config.get("signal", {})
+        thresholds = signal_config.get("thresholds", {})
+        self.thresholds = {}
+        for pair, values in thresholds.items():
+            self.thresholds[pair] = SignalConfig(
+                currency_pair=pair,
+                buy_threshold=values.get("buy_threshold", 0.3),
+                sell_threshold=values.get("sell_threshold", -0.3),
+                confidence_threshold=values.get("confidence_threshold", self.settings.confidence_threshold),
+                time_decay_lambda=values.get("time_decay_lambda", self.settings.time_decay_lambda),
+            )
+
+        source_weights = config.get("source_weights", {})
+        if source_weights:
+            self.source_weighter.update_weights(source_weights)
+
+        time_windows = config.get("time_windows", {})
+        if time_windows:
+            decay_lambda = signal_config.get("time_decay_lambda", self.settings.time_decay_lambda)
+            self.time_windows = [
+                TimeWindow(name, minutes, decay_lambda)
+                for name, minutes in time_windows.items()
+            ]
 
     def generate_signal(
         self,
@@ -299,12 +330,18 @@ class SignalGenerator:
         if not window_config:
             return None
 
+        pair_config = self.thresholds.get(currency_pair, self.config)
+
         # Calculate time-decay weighted sentiment
         current_time = datetime.utcnow()
         sentiments = []
 
         for result, item in zip(sentiment_results, processed_items):
             if currency_pair not in item.currency_pairs:
+                continue
+
+            age_minutes = (current_time - item.timestamp).total_seconds() / 60.0
+            if age_minutes > window_config.minutes:
                 continue
 
             # Get sentiment value for this pair
@@ -324,7 +361,7 @@ class SignalGenerator:
         # Calculate weighted average sentiment
         avg_sentiment = self.time_decay.calculate_weighted_sentiment(
             sentiments,
-            window_config.decay_lambda,
+            pair_config.time_decay_lambda,
             current_time
         )
 
@@ -343,10 +380,12 @@ class SignalGenerator:
         )
 
         # Calculate confidence
-        avg_confidence = statistics.mean([
-            r.confidence for r in sentiment_results
-            if currency_pair in processed_items[sentiment_results.index(r)].currency_pairs
-        ]) if sentiment_results else 0.0
+        confidences = [
+            result.confidence
+            for result, item in zip(sentiment_results, processed_items)
+            if currency_pair in item.currency_pairs
+        ]
+        avg_confidence = statistics.mean(confidences) if confidences else 0.0
 
         confidence = self.strength_calc.calculate_confidence(
             avg_confidence,
@@ -355,7 +394,7 @@ class SignalGenerator:
         )
 
         # Determine direction
-        direction = self._determine_direction(avg_sentiment, confidence)
+        direction = self._determine_direction(avg_sentiment, confidence, pair_config)
 
         # Extract supporting headlines
         headlines = self.explainability.extract_headlines(pair_items)
@@ -419,20 +458,21 @@ class SignalGenerator:
     def _determine_direction(
         self,
         sentiment: float,
-        confidence: float
+        confidence: float,
+        config: SignalConfig
     ) -> SignalDirection:
         """Determine signal direction from sentiment and confidence"""
         # Convert confidence to 0-1 range
         confidence_normalized = confidence / 100.0
 
         # Check if confidence meets threshold
-        if confidence_normalized < self.config.confidence_threshold:
+        if confidence_normalized < config.confidence_threshold:
             return SignalDirection.HOLD
 
         # Determine direction based on sentiment
-        if sentiment >= self.config.buy_threshold:
+        if sentiment >= config.buy_threshold:
             return SignalDirection.BUY
-        elif sentiment <= self.config.sell_threshold:
+        elif sentiment <= config.sell_threshold:
             return SignalDirection.SELL
         else:
             return SignalDirection.HOLD

@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 from dataclasses import dataclass
 from collections import defaultdict
 import statistics
+import httpx
 
 from app.schemas import (
     TradingSignal,
@@ -16,7 +17,16 @@ from app.schemas import (
     SignalDirection,
     CurrencyPair
 )
-from app.database import get_mongodb, get_influxdb
+from app.database import (
+    get_mongodb,
+    get_influxdb_query_api,
+    get_influxdb_write_api,
+    get_postgres_session,
+)
+from app.config import get_settings
+from influxdb_client import Point
+from app.models.tables import backtest_runs
+from sqlalchemy import insert
 
 
 @dataclass
@@ -51,8 +61,7 @@ class PriceDataFetcher:
     """Fetch historical price data for backtesting"""
 
     def __init__(self):
-        self.mongodb = None
-        self.influxdb = None
+        self.settings = get_settings()
 
     async def fetch_price_data(
         self,
@@ -64,26 +73,25 @@ class PriceDataFetcher:
         """Fetch historical price data for a currency pair"""
         try:
             # Try to get from InfluxDB first
-            influxdb = get_influxdb()
+            influxdb = get_influxdb_query_api()
             if influxdb:
-                return await self._fetch_from_influxdb(
+                cached = await self._fetch_from_influxdb(
                     influxdb,
                     currency_pair,
                     start_date,
                     end_date,
                     interval
                 )
+                if cached:
+                    return cached
 
-            # Fallback to MongoDB
-            mongodb = get_mongodb()
-            if mongodb:
-                return await self._fetch_from_mongodb(
-                    mongodb,
-                    currency_pair,
-                    start_date,
-                    end_date,
-                    interval
-                )
+            # Fetch from Alpha Vantage
+            return await self._fetch_from_alpha_vantage(
+                currency_pair,
+                start_date,
+                end_date,
+                interval
+            )
 
             # No data available
             return []
@@ -103,12 +111,12 @@ class PriceDataFetcher:
         """Fetch price data from InfluxDB"""
         try:
             query = f'''
-            from(bucket: "forex_prices")
+            from(bucket: "{self.settings.influxdb_price_bucket}")
               |> range(start: {start_date.isoformat()}Z, stop: {end_date.isoformat()}Z)
-              |> filter(fn: (r) => r["_measurement"] == "ohlc")
+              |> filter(fn: (r) => r["_measurement"] == "forex_prices")
               |> filter(fn: (r) => r["pair"] == "{currency_pair}")
-              |> filter(fn: (r) => r["_field"] == "close")
-              |> aggregateWindow(every: {interval}, fn: last, createEmpty: false)
+              |> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
+              |> sort(columns: ["_time"])
             '''
 
             result = influxdb.query(query)
@@ -116,13 +124,14 @@ class PriceDataFetcher:
             price_data = []
             for table in result:
                 for record in table.records:
+                    values = record.values
                     price_data.append(PriceData(
                         timestamp=record.get_time(),
-                        open=record.values.get("open", 0),
-                        high=record.values.get("high", 0),
-                        low=record.values.get("low", 0),
-                        close=record.values.get("close", 0),
-                        volume=record.values.get("volume", 0)
+                        open=values.get("open", 0),
+                        high=values.get("high", 0),
+                        low=values.get("low", 0),
+                        close=values.get("close", 0),
+                        volume=values.get("volume", 0)
                     ))
 
             return price_data
@@ -131,91 +140,134 @@ class PriceDataFetcher:
             print(f"Error fetching from InfluxDB: {e}")
             return []
 
-    async def _fetch_from_mongodb(
-        self,
-        mongodb,
-        currency_pair: str,
-        start_date: datetime,
-        end_date: datetime,
-        interval: str
-    ) -> List[PriceData]:
-        """Fetch price data from MongoDB"""
-        try:
-            # For demo purposes, generate synthetic price data
-            # In production, this would fetch from a real data source
-            return self._generate_synthetic_price_data(
-                currency_pair,
-                start_date,
-                end_date,
-                interval
-            )
-
-        except Exception as e:
-            print(f"Error fetching from MongoDB: {e}")
-            return []
-
-    def _generate_synthetic_price_data(
+    async def _fetch_from_alpha_vantage(
         self,
         currency_pair: str,
         start_date: datetime,
         end_date: datetime,
         interval: str
     ) -> List[PriceData]:
-        """Generate synthetic price data for testing"""
-        price_data = []
+        """Fetch price data from Alpha Vantage"""
+        if not self.settings.alphavantage_api_key:
+            raise Exception("ALPHAVANTAGE_API_KEY not configured")
 
-        # Base prices for different pairs
-        base_prices = {
-            "EUR/USD": 1.08,
-            "GBP/USD": 1.26,
-            "USD/JPY": 150.0,
-            "USD/CHF": 0.88,
-            "AUD/USD": 0.65,
-            "USD/CAD": 1.36
+        base, quote = currency_pair.split("/")
+        interval_map = {
+            "15min": "15min",
+            "1h": "60min",
+            "4h": "60min",
+        }
+        av_interval = interval_map.get(interval, "60min")
+
+        params = {
+            "function": "FX_INTRADAY",
+            "from_symbol": base,
+            "to_symbol": quote,
+            "interval": av_interval,
+            "outputsize": "full",
+            "apikey": self.settings.alphavantage_api_key,
         }
 
-        base_price = base_prices.get(currency_pair, 1.0)
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.get("https://www.alphavantage.co/query", params=params)
+            response.raise_for_status()
+            data = response.json()
 
-        # Generate data points
-        current_time = start_date
-        current_price = base_price
+        series_key = f"Time Series FX ({av_interval})"
+        if series_key not in data:
+            raise Exception(f"Alpha Vantage response missing series: {data.get('Note') or data.get('Error Message')}")
 
-        while current_time <= end_date:
-            # Random walk
-            change = (hash(str(current_time)) % 100 - 50) / 10000 * base_price
-            current_price += change
-
-            # Ensure price stays positive
-            current_price = max(current_price, base_price * 0.9)
-            current_price = min(current_price, base_price * 1.1)
-
-            # Generate OHLCV
-            high = current_price + abs(change) * 0.5
-            low = current_price - abs(change) * 0.5
-            open_price = current_price - change * 0.5
-            close_price = current_price
-            volume = abs(hash(str(current_time))) % 1000
+        series = data[series_key]
+        price_data = []
+        for timestamp_str, values in series.items():
+            timestamp = datetime.fromisoformat(timestamp_str)
+            if not (start_date <= timestamp <= end_date):
+                continue
 
             price_data.append(PriceData(
-                timestamp=current_time,
-                open=open_price,
-                high=high,
-                low=low,
-                close=close_price,
-                volume=volume
+                timestamp=timestamp,
+                open=float(values["1. open"]),
+                high=float(values["2. high"]),
+                low=float(values["3. low"]),
+                close=float(values["4. close"]),
+                volume=0.0
             ))
 
-            # Move to next interval
-            if interval == "1h":
-                current_time += timedelta(hours=1)
-            elif interval == "4h":
-                current_time += timedelta(hours=4)
-            elif interval == "1d":
-                current_time += timedelta(days=1)
-            else:
-                current_time += timedelta(hours=1)
+        price_data.sort(key=lambda p: p.timestamp)
 
+        if interval == "4h":
+            price_data = self._aggregate_prices(price_data, hours=4)
+
+        await self._write_to_influxdb(currency_pair, price_data)
         return price_data
+
+    async def _write_to_influxdb(self, currency_pair: str, price_data: List[PriceData]) -> None:
+        """Persist price data to InfluxDB for caching"""
+        write_api = get_influxdb_write_api()
+        if not write_api or not price_data:
+            return
+
+        points = []
+        for item in price_data:
+            point = (
+                Point("forex_prices")
+                .tag("pair", currency_pair)
+                .field("open", float(item.open))
+                .field("high", float(item.high))
+                .field("low", float(item.low))
+                .field("close", float(item.close))
+                .field("volume", float(item.volume))
+                .time(item.timestamp)
+            )
+            points.append(point)
+
+        write_api.write(
+            bucket=self.settings.influxdb_price_bucket,
+            org=self.settings.influxdb_org,
+            record=points
+        )
+
+    @staticmethod
+    def _aggregate_prices(price_data: List[PriceData], hours: int) -> List[PriceData]:
+        """Aggregate price data into larger windows"""
+        if not price_data:
+            return []
+
+        aggregated = []
+        bucket = []
+        current_bucket_start = None
+
+        for item in price_data:
+            bucket_start = item.timestamp.replace(minute=0, second=0, microsecond=0)
+            bucket_start = bucket_start.replace(hour=(bucket_start.hour // hours) * hours)
+            if current_bucket_start is None:
+                current_bucket_start = bucket_start
+
+            if bucket_start != current_bucket_start:
+                aggregated.append(PriceData(
+                    timestamp=current_bucket_start,
+                    open=bucket[0].open,
+                    high=max(p.high for p in bucket),
+                    low=min(p.low for p in bucket),
+                    close=bucket[-1].close,
+                    volume=sum(p.volume for p in bucket),
+                ))
+                bucket = []
+                current_bucket_start = bucket_start
+
+            bucket.append(item)
+
+        if bucket:
+            aggregated.append(PriceData(
+                timestamp=current_bucket_start,
+                open=bucket[0].open,
+                high=max(p.high for p in bucket),
+                low=min(p.low for p in bucket),
+                close=bucket[-1].close,
+                volume=sum(p.volume for p in bucket),
+            ))
+
+        return aggregated
 
 
 class TradeExecutor:
@@ -620,5 +672,36 @@ class BacktestService:
         # Run backtest
         engine = BacktestEngine(initial_capital, risk_per_trade)
         result = await engine.run_backtest(signals, start_date, end_date)
+
+        # Store backtest result in PostgreSQL
+        session = get_postgres_session()
+        if session:
+            async with session() as db:
+                await db.execute(
+                    insert(backtest_runs).values(
+                        currency_pair=result.currency_pair,
+                        start_date=result.start_date,
+                        end_date=result.end_date,
+                        initial_capital=result.initial_capital,
+                        final_capital=result.final_capital,
+                        total_return=result.total_return,
+                        win_rate=result.win_rate,
+                        average_risk_reward=result.average_risk_reward,
+                        sharpe_ratio=result.sharpe_ratio,
+                        max_drawdown=result.max_drawdown,
+                        total_trades=result.total_trades,
+                        winning_trades=result.winning_trades,
+                        losing_trades=result.losing_trades,
+                        confidence_calibration=result.confidence_calibration,
+                        parameters={
+                            "currency_pair": currency_pair,
+                            "start_date": start_date.isoformat(),
+                            "end_date": end_date.isoformat(),
+                            "initial_capital": initial_capital,
+                            "risk_per_trade": risk_per_trade,
+                        },
+                    )
+                )
+                await db.commit()
 
         return result

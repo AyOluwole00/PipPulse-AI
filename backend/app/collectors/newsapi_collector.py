@@ -7,6 +7,7 @@ from typing import List, Optional
 from datetime import datetime, timedelta
 import aiohttp
 import asyncio
+import hashlib
 
 from app.collectors.base import BaseCollector
 from app.schemas import RawNewsItem, SourceType

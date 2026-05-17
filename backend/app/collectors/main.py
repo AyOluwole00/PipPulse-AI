@@ -13,6 +13,7 @@ from app.collectors.twitter_collector import TwitterCollector
 from app.collectors.reddit_collector import RedditCollector
 from app.collectors.telegram_collector import TelegramCollector
 from app.config import get_settings
+from app.database import connect_redis, disconnect_redis
 
 # Configure logging
 logging.basicConfig(
@@ -114,6 +115,9 @@ async def main():
     """Main entry point"""
     logger.info("Starting PipPulse AI Collector Service...")
 
+    # Connect to Redis for stream publishing
+    await connect_redis()
+
     # Create runner
     runner = CollectorRunner()
 
@@ -133,6 +137,8 @@ async def main():
     except KeyboardInterrupt:
         logger.info("Received interrupt signal, shutting down...")
         runner.stop()
+    finally:
+        await disconnect_redis()
 
 
 if __name__ == "__main__":

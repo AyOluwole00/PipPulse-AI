@@ -9,10 +9,12 @@ from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 from typing import List, Optional
 import logging
+import asyncio
 from datetime import datetime
 
 from app.config import get_settings
 from app.api import signals, news, admin, health, websocket, backtesting
+from app.services.realtime_service import listen_for_events
 
 # Configure logging
 logging.basicConfig(
@@ -34,6 +36,10 @@ async def lifespan(app: FastAPI):
         from app.database import connect_all_databases
         await connect_all_databases()
         logger.info("Databases initialized")
+        app.state.realtime_stop = asyncio.Event()
+        app.state.realtime_task = asyncio.create_task(
+            listen_for_events(app.state.realtime_stop)
+        )
     except Exception as e:
         logger.error(f"Failed to initialize databases: {e}")
         raise
@@ -43,6 +49,10 @@ async def lifespan(app: FastAPI):
     # Shutdown
     logger.info("Shutting down PipPulse AI backend...")
     try:
+        if hasattr(app.state, "realtime_stop"):
+            app.state.realtime_stop.set()
+        if hasattr(app.state, "realtime_task"):
+            app.state.realtime_task.cancel()
         from app.database import disconnect_all_databases
         await disconnect_all_databases()
     except Exception as e:
@@ -70,11 +80,13 @@ app.add_middleware(
 
 # Include routers
 app.include_router(health.router, prefix="/api/health", tags=["Health"])
+app.include_router(health.router, prefix="/health", tags=["Health"])
 app.include_router(signals.router, prefix="/api/signals", tags=["Signals"])
 app.include_router(news.router, prefix="/api/news", tags=["News"])
 app.include_router(admin.router, prefix="/api/admin", tags=["Admin"])
 app.include_router(backtesting.router, prefix="/api/backtesting", tags=["Backtesting"])
 app.include_router(websocket.router, prefix="/api/ws", tags=["WebSocket"])
+app.include_router(websocket.router, prefix="/ws", tags=["WebSocket"])
 
 
 # Root endpoint

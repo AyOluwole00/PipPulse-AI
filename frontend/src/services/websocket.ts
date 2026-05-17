@@ -1,86 +1,63 @@
-import { io, Socket } from 'socket.io-client';
-import type { WebSocketMessage, TradingSignal, NewsItemResponse } from '@/types';
+import type { WebSocketMessage } from '@/types';
 
-const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000';
+const WS_BASE = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000';
+const WS_ENDPOINT = WS_BASE.endsWith('/ws')
+  ? WS_BASE
+  : `${WS_BASE.replace(/\/$/, '')}/ws`;
 
 type EventHandler = (data: any) => void;
 
 class WebSocketService {
-  private socket: Socket | null = null;
+  private socket: WebSocket | null = null;
+  private eventHandlers: Map<string, Set<EventHandler>> = new Map();
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
   private reconnectDelay = 1000;
-  private eventHandlers: Map<string, Set<EventHandler>> = new Map();
 
   connect() {
-    if (this.socket?.connected) {
-      console.log('WebSocket already connected');
+    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       return;
     }
 
-    console.log('Connecting to WebSocket...', WS_URL);
+    this.socket = new WebSocket(WS_ENDPOINT);
 
-    this.socket = io(WS_URL, {
-      transports: ['websocket', 'polling'],
-      reconnection: true,
-      reconnectionDelay: this.reconnectDelay,
-      reconnectionAttempts: this.maxReconnectAttempts,
-    });
-
-    this.socket.on('connect', () => {
-      console.log('WebSocket connected');
+    this.socket.onopen = () => {
       this.reconnectAttempts = 0;
       this.emit('connected', { timestamp: new Date().toISOString() });
-    });
+    };
 
-    this.socket.on('disconnect', (reason) => {
-      console.log('WebSocket disconnected:', reason);
-      this.emit('disconnected', { reason, timestamp: new Date().toISOString() });
-    });
+    this.socket.onmessage = (event) => {
+      try {
+        const message: WebSocketMessage = JSON.parse(event.data);
+        this.emit(message.type, message.data ?? message);
+      } catch (error) {
+        console.error('WebSocket message parse error:', error);
+      }
+    };
 
-    this.socket.on('connect_error', (error) => {
-      console.error('WebSocket connection error:', error);
-      this.reconnectAttempts++;
-      this.emit('error', { error: error.message, timestamp: new Date().toISOString() });
-    });
+    this.socket.onclose = (event) => {
+      this.emit('disconnected', { reason: event.reason, timestamp: new Date().toISOString() });
+      this.tryReconnect();
+    };
 
-    // Handle incoming messages
-    this.socket.on('message', (message: WebSocketMessage) => {
-      this.handleMessage(message);
-    });
+    this.socket.onerror = () => {
+      this.emit('error', { timestamp: new Date().toISOString() });
+    };
+  }
 
-    // Handle signal updates
-    this.socket.on('signal', (signal: TradingSignal) => {
-      this.emit('signal', signal);
-    });
-
-    // Handle news updates
-    this.socket.on('news', (news: NewsItemResponse) => {
-      this.emit('news', news);
-    });
-
-    // Handle errors
-    this.socket.on('error', (error: any) => {
-      this.emit('error', error);
-    });
-
-    // Handle heartbeat
-    this.socket.on('heartbeat', (data: any) => {
-      this.emit('heartbeat', data);
-    });
+  private tryReconnect() {
+    if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+      return;
+    }
+    this.reconnectAttempts += 1;
+    setTimeout(() => this.connect(), this.reconnectDelay);
   }
 
   disconnect() {
     if (this.socket) {
-      this.socket.disconnect();
+      this.socket.close();
       this.socket = null;
-      console.log('WebSocket disconnected');
     }
-  }
-
-  private handleMessage(message: WebSocketMessage) {
-    const { type, data } = message;
-    this.emit(type, data);
   }
 
   on(event: string, handler: EventHandler) {
@@ -113,11 +90,9 @@ class WebSocketService {
     }
   }
 
-  send(event: string, data?: any) {
-    if (this.socket?.connected) {
-      this.socket.emit(event, data);
-    } else {
-      console.warn('Cannot send message: WebSocket not connected');
+  send(type: string, data?: any) {
+    if (this.socket?.readyState === WebSocket.OPEN) {
+      this.socket.send(JSON.stringify({ type, ...data }));
     }
   }
 
@@ -130,7 +105,7 @@ class WebSocketService {
   }
 
   isConnected(): boolean {
-    return this.socket?.connected ?? false;
+    return this.socket?.readyState === WebSocket.OPEN;
   }
 }
 

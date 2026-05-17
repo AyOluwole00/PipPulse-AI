@@ -8,7 +8,14 @@ from typing import Dict, Any
 from datetime import datetime
 import asyncio
 
-from app.database import get_mongodb, get_redis, get_postgres, get_influxdb
+from sqlalchemy import text
+
+from app.database import (
+    get_mongodb,
+    get_redis,
+    get_postgres_session,
+    get_influxdb_client,
+)
 from app.api.websocket import manager as ws_manager
 
 router = APIRouter()
@@ -80,10 +87,10 @@ async def detailed_health_check() -> Dict[str, Any]:
 
     # Check PostgreSQL
     try:
-        postgres = get_postgres()
-        if postgres:
-            # Simple query to test connection
-            await postgres.fetchval("SELECT 1")
+        session = get_postgres_session()
+        if session:
+            async with session() as db:
+                await db.execute(text("SELECT 1"))
             health_status["components"]["postgres"] = {
                 "status": "healthy",
                 "message": "PostgreSQL is responsive"
@@ -103,8 +110,9 @@ async def detailed_health_check() -> Dict[str, Any]:
 
     # Check InfluxDB
     try:
-        influxdb = get_influxdb()
+        influxdb = get_influxdb_client()
         if influxdb:
+            influxdb.ping()
             health_status["components"]["influxdb"] = {
                 "status": "healthy",
                 "message": "InfluxDB connection established"
@@ -177,4 +185,3 @@ async def websocket_connections() -> Dict[str, Any]:
         "active_connections": ws_manager.get_connection_count(),
         "max_connections": len(ws_manager.active_connections)
     }
-

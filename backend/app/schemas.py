@@ -137,6 +137,9 @@ class SignalResponse(BaseModel):
     time_window: str
     reasoning: str
     supporting_headlines: List[str]
+    sentiment_score: float = Field(ge=-1.0, le=1.0, default=0.0)
+    volume: int = 0
+    consensus_factor: float = Field(ge=0.0, le=1.0, default=0.0)
 
     class Config:
         json_encoders = {

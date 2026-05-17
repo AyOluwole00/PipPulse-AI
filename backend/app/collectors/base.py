@@ -11,6 +11,7 @@ import json
 
 from app.schemas import RawNewsItem, SourceType
 from app.database import get_redis
+from app.config import get_settings
 
 
 class BaseCollector(ABC):
@@ -19,7 +20,8 @@ class BaseCollector(ABC):
     def __init__(self, source_type: SourceType):
         self.source_type = source_type
         self.redis = get_redis()
-        self.stream_key = "news_stream"
+        self.settings = get_settings()
+        self.stream_key = self.settings.redis_stream_key
 
     @abstractmethod
     async def collect(self) -> List[RawNewsItem]:

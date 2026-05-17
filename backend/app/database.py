@@ -148,21 +148,25 @@ async def connect_influxdb():
 
     influxdb_write_api = influxdb_client.write_api(write_options=SYNCHRONOUS)
 
-    # Create bucket if it doesn't exist
+    # Create buckets if they don't exist
     buckets_api = influxdb_client.buckets_api()
     buckets = buckets_api.find_buckets()
 
-    bucket_exists = any(
-        bucket.name == settings.influxdb_bucket
-        for bucket in buckets.buckets
-    )
+    existing_buckets = {bucket.name for bucket in buckets.buckets}
 
-    if not bucket_exists:
+    if settings.influxdb_bucket not in existing_buckets:
         buckets_api.create_bucket(
             bucket_name=settings.influxdb_bucket,
             org=settings.influxdb_org
         )
         print(f"Created InfluxDB bucket: {settings.influxdb_bucket}")
+
+    if settings.influxdb_price_bucket not in existing_buckets:
+        buckets_api.create_bucket(
+            bucket_name=settings.influxdb_price_bucket,
+            org=settings.influxdb_org
+        )
+        print(f"Created InfluxDB bucket: {settings.influxdb_price_bucket}")
 
     print(f"Connected to InfluxDB: {settings.influxdb_bucket}")
 
@@ -222,6 +226,11 @@ def get_postgres_engine():
     return async_engine
 
 
+def get_postgres():
+    """Get PostgreSQL async engine (legacy accessor)"""
+    return async_engine
+
+
 def get_influxdb_write_api():
     """Get InfluxDB write API"""
     return influxdb_write_api
@@ -236,4 +245,9 @@ def get_influxdb_query_api():
 
 def get_influxdb_client():
     """Get InfluxDB client"""
+    return influxdb_client
+
+
+def get_influxdb():
+    """Get InfluxDB client (legacy accessor)"""
     return influxdb_client

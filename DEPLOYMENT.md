@@ -61,10 +61,12 @@ INFLUXDB_USERNAME=pippulse
 INFLUXDB_PASSWORD=pippulse123
 INFLUXDB_ORG=pippulse
 INFLUXDB_BUCKET=signals
+INFLUXDB_PRICE_BUCKET=forex_prices
 INFLUXDB_TOKEN=pippulse-super-secret-token-change-in-production
 
 # APIs
 NEWSAPI_KEY=your_key_here
+ALPHAVANTAGE_API_KEY=your_key_here
 TWITTER_BEARER_TOKEN=your_token_here
 REDDIT_CLIENT_ID=your_id_here
 REDDIT_CLIENT_SECRET=your_secret_here

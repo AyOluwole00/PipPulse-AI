@@ -43,15 +43,21 @@ export function useSignals() {
   }, [fetchSignals]);
 
   useEffect(() => {
-    // Subscribe to signal updates
-    ws.on('signal', (signal: TradingSignal) => {
-      addSignal(signal);
-    });
+    ws.connect();
+    ws.subscribe({ signals: true });
+
+    const handler = (signal: TradingSignal) => {
+      if (signalFilter === 'all' || signal.currency_pair === selectedCurrencyPair) {
+        addSignal(signal);
+      }
+    };
+
+    ws.on('signal', handler);
 
     return () => {
-      ws.off('signal', addSignal);
+      ws.off('signal', handler);
     };
-  }, [addSignal]);
+  }, [addSignal, selectedCurrencyPair, signalFilter]);
 
   return {
     signals,

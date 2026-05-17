@@ -58,7 +58,10 @@ async def get_signals(
                 timestamp=signal["timestamp"],
                 time_window=signal["time_window"],
                 reasoning=signal.get("reasoning", ""),
-                supporting_headlines=signal.get("supporting_headlines", [])
+                supporting_headlines=signal.get("supporting_headlines", []),
+                sentiment_score=signal.get("sentiment_score", 0.0),
+                volume=signal.get("volume", 0),
+                consensus_factor=signal.get("consensus_factor", 0.0)
             ))
 
         return responses
@@ -100,7 +103,10 @@ async def get_latest_signals(
                     timestamp=signal["timestamp"],
                     time_window=signal["time_window"],
                     reasoning=signal.get("reasoning", ""),
-                    supporting_headlines=signal.get("supporting_headlines", [])
+                    supporting_headlines=signal.get("supporting_headlines", []),
+                    sentiment_score=signal.get("sentiment_score", 0.0),
+                    volume=signal.get("volume", 0),
+                    consensus_factor=signal.get("consensus_factor", 0.0)
                 ))
 
         return signals
