@@ -1,0 +1,91 @@
+/* Global styles */
+*, *::before, *::after {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+:root {
+	color-scheme: light dark;
+	--bg: #0b0f14;
+	--surface: #121824;
+	--text: #e6edf3;
+	--muted: #9aa4b2;
+	--primary: #4f8cff;
+	--accent: #22c55e;
+	--border: #1f2a3a;
+	--ring: rgba(79, 140, 255, 0.35);
+	--radius: 10px;
+	--shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+html, body {
+	height: 100%;
+}
+
+body {
+	font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+	line-height: 1.5;
+	background: var(--bg);
+	color: var(--text);
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+}
+
+img, picture, video, canvas, svg {
+	display: block;
+	max-width: 100%;
+}
+
+input, button, textarea, select {
+	font: inherit;
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+}
+
+button {
+	cursor: pointer;
+}
+
+::selection {
+	background: rgba(79, 140, 255, 0.25);
+}
+
+/* Layout helpers */
+.container {
+	width: min(1200px, 92vw);
+	margin: 0 auto;
+}
+
+.card {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	box-shadow: var(--shadow);
+}
+
+/* Focus styles */
+:focus-visible {
+	outline: 2px solid var(--primary);
+	outline-offset: 2px;
+	box-shadow: 0 0 0 4px var(--ring);
+}
+
+/* Scrollbar (webkit) */
+*::-webkit-scrollbar {
+	width: 10px;
+	height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+	background: var(--surface);
+}
+
+*::-webkit-scrollbar-thumb {
+	background: #2a3648;
+	border-radius: 999px;
+	border: 2px solid var(--surface);
+}

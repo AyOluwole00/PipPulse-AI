@@ -74,3 +74,6 @@ temp/
 .venv/
 venv/
 env/
+
+
+.next/
