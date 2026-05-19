@@ -25,6 +25,13 @@ export function useSignals() {
     setLoading(true);
     setError(null);
     try {
+      const backendAvailable = await api.isBackendAvailable();
+
+      if (!backendAvailable) {
+        setSignals([]);
+        return;
+      }
+
       const data = await api.getLatestSignals(
         signalFilter === 'all' ? undefined : [selectedCurrencyPair],
         selectedTimeWindow
@@ -32,7 +39,6 @@ export function useSignals() {
       setSignals(data);
     } catch (err) {
       setError('Failed to fetch signals');
-      console.error('Error fetching signals:', err);
     } finally {
       setLoading(false);
     }
@@ -43,8 +49,11 @@ export function useSignals() {
   }, [fetchSignals]);
 
   useEffect(() => {
-    ws.connect();
-    ws.subscribe({ signals: true });
+    void ws.connect().then(() => {
+      if (ws.isConnected()) {
+        ws.subscribe({ signals: true });
+      }
+    });
 
     const handler = (signal: TradingSignal) => {
       if (signalFilter === 'all' || signal.currency_pair === selectedCurrencyPair) {

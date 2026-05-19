@@ -1,4 +1,5 @@
 import type { WebSocketMessage } from '@/types';
+import api from '@/services/api';
 
 const WS_BASE = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000';
 const WS_ENDPOINT = WS_BASE.endsWith('/ws')
@@ -13,51 +14,88 @@ class WebSocketService {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
   private reconnectDelay = 1000;
+  private connectPromise: Promise<void> | null = null;
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 
-  connect() {
+  async connect() {
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       return;
     }
 
-    this.socket = new WebSocket(WS_ENDPOINT);
+    if (this.connectPromise) {
+      return this.connectPromise;
+    }
 
-    this.socket.onopen = () => {
-      this.reconnectAttempts = 0;
-      this.emit('connected', { timestamp: new Date().toISOString() });
-    };
+    this.connectPromise = (async () => {
+      const backendAvailable = await api.isBackendAvailable();
 
-    this.socket.onmessage = (event) => {
-      try {
-        const message: WebSocketMessage = JSON.parse(event.data);
-        this.emit(message.type, message.data ?? message);
-      } catch (error) {
-        console.error('WebSocket message parse error:', error);
+      if (!backendAvailable) {
+        return;
       }
-    };
 
-    this.socket.onclose = (event) => {
-      this.emit('disconnected', { reason: event.reason, timestamp: new Date().toISOString() });
-      this.tryReconnect();
-    };
+      if (this.socket && this.socket.readyState === WebSocket.CONNECTING) {
+        return;
+      }
 
-    this.socket.onerror = () => {
-      this.emit('error', { timestamp: new Date().toISOString() });
-    };
+      this.socket = new WebSocket(WS_ENDPOINT);
+
+      this.socket.onopen = () => {
+        this.reconnectAttempts = 0;
+        this.emit('connected', { timestamp: new Date().toISOString() });
+      };
+
+      this.socket.onmessage = (event) => {
+        try {
+          const message: WebSocketMessage = JSON.parse(event.data);
+          this.emit(message.type, message.data ?? message);
+        } catch {
+          return;
+        }
+      };
+
+      this.socket.onclose = (event) => {
+        this.emit('disconnected', { reason: event.reason, timestamp: new Date().toISOString() });
+        this.tryReconnect();
+      };
+
+      this.socket.onerror = () => {
+        this.emit('error', { timestamp: new Date().toISOString() });
+      };
+    })().finally(() => {
+      this.connectPromise = null;
+    });
+
+    return this.connectPromise;
   }
 
   private tryReconnect() {
+    if (this.reconnectTimer) {
+      return;
+    }
+
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
       return;
     }
+
     this.reconnectAttempts += 1;
-    setTimeout(() => this.connect(), this.reconnectDelay);
+    this.reconnectTimer = setTimeout(() => {
+      this.reconnectTimer = null;
+      void this.connect();
+    }, this.reconnectDelay);
   }
 
   disconnect() {
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+
     if (this.socket) {
       this.socket.close();
       this.socket = null;
     }
+
+    this.connectPromise = null;
   }
 
   on(event: string, handler: EventHandler) {

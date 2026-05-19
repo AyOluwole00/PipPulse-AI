@@ -19,6 +19,13 @@ export function useNews(currencyPair?: string, limit = 20, hours = 24) {
     setLoading(true);
     setError(null);
     try {
+      const backendAvailable = await api.isBackendAvailable();
+
+      if (!backendAvailable) {
+        setNews([]);
+        return;
+      }
+
       const data = await api.getNews({
         currency_pair: currencyPair,
         limit,
@@ -27,7 +34,6 @@ export function useNews(currencyPair?: string, limit = 20, hours = 24) {
       setNews(data || []);
     } catch (err) {
       setError('Failed to fetch news');
-      console.error('Error fetching news:', err);
     } finally {
       setLoading(false);
     }
@@ -38,8 +44,11 @@ export function useNews(currencyPair?: string, limit = 20, hours = 24) {
   }, [fetchNews]);
 
   useEffect(() => {
-    ws.connect();
-    ws.subscribe({ news: true });
+    void ws.connect().then(() => {
+      if (ws.isConnected()) {
+        ws.subscribe({ news: true });
+      }
+    });
 
     const handler = (item: NewsItemResponse) => {
       if (!currencyPair || item.currency_pairs.includes(currencyPair)) {

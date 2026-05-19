@@ -1,21 +1,29 @@
 'use client';
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
-import type { SentimentTrend } from '@/types';
+import type { TradingSignal } from '@/types';
 
 interface SentimentChartProps {
-  data: SentimentTrend;
+  signals: TradingSignal[];
+  pair: string;
 }
 
-export function SentimentChart({ data }: SentimentChartProps) {
-  const chartData = data.timestamps.map((timestamp, index) => ({
-    time: new Date(timestamp).toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-    }),
-    sentiment: data.sentiment_scores[index],
-    volume: data.signal_counts[index],
-  }));
+export function SentimentChart({ signals, pair }: SentimentChartProps) {
+  const chartData = signals
+    .filter((signal) => signal.currency_pair === pair)
+    .map((signal) => ({
+      time: new Date(signal.timestamp).toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
+      sentiment: signal.sentiment_score,
+      volume: signal.volume,
+    }))
+    .sort((left, right) => left.time.localeCompare(right.time));
+
+  if (chartData.length === 0) {
+    return <div className="h-64 flex items-center justify-center text-slate-400">No sentiment data available for {pair}</div>;
+  }
 
   const formatTime = (tickItem: string) => tickItem;
 

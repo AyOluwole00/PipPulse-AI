@@ -13,6 +13,8 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 class APIService {
   private client: AxiosInstance;
+  private backendAvailable: boolean | null = null;
+  private backendAvailabilityPromise: Promise<boolean> | null = null;
 
   constructor() {
     this.client = axios.create({
@@ -37,15 +39,6 @@ class APIService {
     this.client.interceptors.response.use(
       (response) => response,
       (error: AxiosError) => {
-        if (error.response) {
-          // Server responded with error status
-          console.error('API Error:', error.response.data);
-        } else if (error.request) {
-          // Request made but no response
-          console.error('Network Error:', error.message);
-        } else {
-          console.error('Error:', error.message);
-        }
         return Promise.reject(error);
       }
     );
@@ -55,6 +48,29 @@ class APIService {
   async healthCheck() {
     const response = await this.client.get('/api/health');
     return response.data;
+  }
+
+  async isBackendAvailable() {
+    if (this.backendAvailable !== null) {
+      return this.backendAvailable;
+    }
+
+    if (!this.backendAvailabilityPromise) {
+      this.backendAvailabilityPromise = this.healthCheck()
+        .then(() => {
+          this.backendAvailable = true;
+          return true;
+        })
+        .catch(() => {
+          this.backendAvailable = false;
+          return false;
+        })
+        .finally(() => {
+          this.backendAvailabilityPromise = null;
+        });
+    }
+
+    return this.backendAvailabilityPromise;
   }
 
   async detailedHealthCheck() {
