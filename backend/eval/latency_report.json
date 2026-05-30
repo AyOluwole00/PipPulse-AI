@@ -1,0 +1,2046 @@
+{
+  "timestamp": "2026-05-30T19:34:43.461532",
+  "summary": {
+    "count": 100,
+    "min_ms": 53.552490234375,
+    "max_ms": 178.135009765625,
+    "avg_ms": 89.33399658203125,
+    "p50_ms": 86.56494140625,
+    "p95_ms": 143.518310546875,
+    "p99_ms": 178.135009765625
+  },
+  "component_statistics": {
+    "collection": {
+      "count": 100,
+      "min_ms": 2.02099609375,
+      "max_ms": 49.956787109375,
+      "avg_ms": 14.52858154296875
+    },
+    "preprocessing": {
+      "count": 100,
+      "min_ms": 4.0419921875,
+      "max_ms": 50.52490234375,
+      "avg_ms": 15.3147412109375
+    },
+    "sentiment": {
+      "count": 100,
+      "min_ms": 21.027099609375,
+      "max_ms": 65.107421875,
+      "avg_ms": 31.269677734375
+    },
+    "signal": {
+      "count": 100,
+      "min_ms": 2.0126953125,
+      "max_ms": 34.676513671875,
+      "avg_ms": 13.81414794921875
+    },
+    "delivery": {
+      "count": 100,
+      "min_ms": 2.014404296875,
+      "max_ms": 48.64501953125,
+      "avg_ms": 14.40684814453125
+    }
+  },
+  "individual_items": [
+    {
+      "item_id": "synthetic-00000",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166074521.73,
+        "collection_end": 1780166074527.526,
+        "preprocessing_end": 1780166074543.4246,
+        "sentiment_end": 1780166074575.2227,
+        "signal_end": 1780166074593.8074,
+        "websocket_delivery": 1780166074608.295
+      },
+      "component_latencies_ms": {
+        "collection": 5.7958984375,
+        "preprocessing": 15.898681640625,
+        "sentiment": 31.798095703125,
+        "signal": 18.584716796875,
+        "delivery": 14.487548828125
+      },
+      "total_latency_ms": 86.56494140625
+    },
+    {
+      "item_id": "synthetic-00001",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166074608.295,
+        "collection_end": 1780166074623.059,
+        "preprocessing_end": 1780166074633.5544,
+        "sentiment_end": 1780166074659.6223,
+        "signal_end": 1780166074674.5393,
+        "websocket_delivery": 1780166074686.6274
+      },
+      "component_latencies_ms": {
+        "collection": 14.76416015625,
+        "preprocessing": 10.495361328125,
+        "sentiment": 26.06787109375,
+        "signal": 14.9169921875,
+        "delivery": 12.088134765625
+      },
+      "total_latency_ms": 78.33251953125
+    },
+    {
+      "item_id": "synthetic-00002",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166074686.6274,
+        "collection_end": 1780166074695.701,
+        "preprocessing_end": 1780166074708.7947,
+        "sentiment_end": 1780166074743.5583,
+        "signal_end": 1780166074757.5208,
+        "websocket_delivery": 1780166074762.164
+      },
+      "component_latencies_ms": {
+        "collection": 9.073486328125,
+        "preprocessing": 13.09375,
+        "sentiment": 34.763671875,
+        "signal": 13.96240234375,
+        "delivery": 4.643310546875
+      },
+      "total_latency_ms": 75.53662109375
+    },
+    {
+      "item_id": "synthetic-00003",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166074762.164,
+        "collection_end": 1780166074775.4197,
+        "preprocessing_end": 1780166074792.4102,
+        "sentiment_end": 1780166074824.0706,
+        "signal_end": 1780166074834.6904,
+        "websocket_delivery": 1780166074850.7732
+      },
+      "component_latencies_ms": {
+        "collection": 13.255615234375,
+        "preprocessing": 16.990478515625,
+        "sentiment": 31.660400390625,
+        "signal": 10.619873046875,
+        "delivery": 16.082763671875
+      },
+      "total_latency_ms": 88.609130859375
+    },
+    {
+      "item_id": "synthetic-00004",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166074850.7732,
+        "collection_end": 1780166074859.1785,
+        "preprocessing_end": 1780166074875.1091,
+        "sentiment_end": 1780166074908.5583,
+        "signal_end": 1780166074917.347,
+        "websocket_delivery": 1780166074928.7441
+      },
+      "component_latencies_ms": {
+        "collection": 8.4052734375,
+        "preprocessing": 15.9306640625,
+        "sentiment": 33.44921875,
+        "signal": 8.78857421875,
+        "delivery": 11.397216796875
+      },
+      "total_latency_ms": 77.970947265625
+    },
+    {
+      "item_id": "synthetic-00005",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166074928.7441,
+        "collection_end": 1780166074941.7979,
+        "preprocessing_end": 1780166074959.833,
+        "sentiment_end": 1780166074988.9207,
+        "signal_end": 1780166075000.8833,
+        "websocket_delivery": 1780166075016.7612
+      },
+      "component_latencies_ms": {
+        "collection": 13.0537109375,
+        "preprocessing": 18.03515625,
+        "sentiment": 29.087646484375,
+        "signal": 11.962646484375,
+        "delivery": 15.8779296875
+      },
+      "total_latency_ms": 88.01708984375
+    },
+    {
+      "item_id": "synthetic-00006",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166075016.7612,
+        "collection_end": 1780166075032.7617,
+        "preprocessing_end": 1780166075048.8955,
+        "sentiment_end": 1780166075074.077,
+        "signal_end": 1780166075091.9683,
+        "websocket_delivery": 1780166075104.7617
+      },
+      "component_latencies_ms": {
+        "collection": 16.00048828125,
+        "preprocessing": 16.1337890625,
+        "sentiment": 25.181396484375,
+        "signal": 17.891357421875,
+        "delivery": 12.79345703125
+      },
+      "total_latency_ms": 88.00048828125
+    },
+    {
+      "item_id": "synthetic-00007",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166075104.7617,
+        "collection_end": 1780166075114.8481,
+        "preprocessing_end": 1780166075127.109,
+        "sentiment_end": 1780166075152.181,
+        "signal_end": 1780166075168.846,
+        "websocket_delivery": 1780166075178.5098
+      },
+      "component_latencies_ms": {
+        "collection": 10.08642578125,
+        "preprocessing": 12.2607421875,
+        "sentiment": 25.072021484375,
+        "signal": 16.6650390625,
+        "delivery": 9.663818359375
+      },
+      "total_latency_ms": 73.748046875
+    },
+    {
+      "item_id": "synthetic-00008",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166075178.5098,
+        "collection_end": 1780166075192.641,
+        "preprocessing_end": 1780166075227.0437,
+        "sentiment_end": 1780166075261.5093,
+        "signal_end": 1780166075275.3157,
+        "websocket_delivery": 1780166075295.4863
+      },
+      "component_latencies_ms": {
+        "collection": 14.13134765625,
+        "preprocessing": 34.402587890625,
+        "sentiment": 34.465576171875,
+        "signal": 13.806396484375,
+        "delivery": 20.170654296875
+      },
+      "total_latency_ms": 116.9765625
+    },
+    {
+      "item_id": "synthetic-00009",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166075295.4863,
+        "collection_end": 1780166075299.2646,
+        "preprocessing_end": 1780166075309.4846,
+        "sentiment_end": 1780166075332.1035,
+        "signal_end": 1780166075342.549,
+        "websocket_delivery": 1780166075357.0493
+      },
+      "component_latencies_ms": {
+        "collection": 3.7783203125,
+        "preprocessing": 10.219970703125,
+        "sentiment": 22.618896484375,
+        "signal": 10.445556640625,
+        "delivery": 14.500244140625
+      },
+      "total_latency_ms": 61.56298828125
+    },
+    {
+      "item_id": "synthetic-00010",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166075357.0493,
+        "collection_end": 1780166075375.1985,
+        "preprocessing_end": 1780166075381.2478,
+        "sentiment_end": 1780166075416.7925,
+        "signal_end": 1780166075422.847,
+        "websocket_delivery": 1780166075433.089
+      },
+      "component_latencies_ms": {
+        "collection": 18.149169921875,
+        "preprocessing": 6.04931640625,
+        "sentiment": 35.544677734375,
+        "signal": 6.054443359375,
+        "delivery": 10.2421875
+      },
+      "total_latency_ms": 76.039794921875
+    },
+    {
+      "item_id": "synthetic-00011",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166075433.089,
+        "collection_end": 1780166075442.2642,
+        "preprocessing_end": 1780166075456.5083,
+        "sentiment_end": 1780166075490.118,
+        "signal_end": 1780166075504.328,
+        "websocket_delivery": 1780166075512.512
+      },
+      "component_latencies_ms": {
+        "collection": 9.175048828125,
+        "preprocessing": 14.244140625,
+        "sentiment": 33.609619140625,
+        "signal": 14.2099609375,
+        "delivery": 8.18408203125
+      },
+      "total_latency_ms": 79.4228515625
+    },
+    {
+      "item_id": "synthetic-00012",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166075512.512,
+        "collection_end": 1780166075521.0696,
+        "preprocessing_end": 1780166075533.1711,
+        "sentiment_end": 1780166075557.2046,
+        "signal_end": 1780166075569.1628,
+        "websocket_delivery": 1780166075588.3772
+      },
+      "component_latencies_ms": {
+        "collection": 8.5576171875,
+        "preprocessing": 12.1015625,
+        "sentiment": 24.033447265625,
+        "signal": 11.958251953125,
+        "delivery": 19.21435546875
+      },
+      "total_latency_ms": 75.865234375
+    },
+    {
+      "item_id": "synthetic-00013",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166075588.3772,
+        "collection_end": 1780166075595.4338,
+        "preprocessing_end": 1780166075611.5254,
+        "sentiment_end": 1780166075644.2007,
+        "signal_end": 1780166075654.7666,
+        "websocket_delivery": 1780166075668.2676
+      },
+      "component_latencies_ms": {
+        "collection": 7.056640625,
+        "preprocessing": 16.091552734375,
+        "sentiment": 32.67529296875,
+        "signal": 10.56591796875,
+        "delivery": 13.5009765625
+      },
+      "total_latency_ms": 79.890380859375
+    },
+    {
+      "item_id": "synthetic-00014",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166075671.438,
+        "collection_end": 1780166075678.5144,
+        "preprocessing_end": 1780166075692.6592,
+        "sentiment_end": 1780166075721.5732,
+        "signal_end": 1780166075741.112,
+        "websocket_delivery": 1780166075776.202
+      },
+      "component_latencies_ms": {
+        "collection": 7.076416015625,
+        "preprocessing": 14.144775390625,
+        "sentiment": 28.9140625,
+        "signal": 19.538818359375,
+        "delivery": 35.08984375
+      },
+      "total_latency_ms": 104.763916015625
+    },
+    {
+      "item_id": "synthetic-00015",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166075776.202,
+        "collection_end": 1780166075808.9644,
+        "preprocessing_end": 1780166075837.9587,
+        "sentiment_end": 1780166075866.346,
+        "signal_end": 1780166075894.362,
+        "websocket_delivery": 1780166075919.7202
+      },
+      "component_latencies_ms": {
+        "collection": 32.762451171875,
+        "preprocessing": 28.994384765625,
+        "sentiment": 28.38720703125,
+        "signal": 28.01611328125,
+        "delivery": 25.358154296875
+      },
+      "total_latency_ms": 143.518310546875
+    },
+    {
+      "item_id": "synthetic-00016",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166075919.7202,
+        "collection_end": 1780166075930.8123,
+        "preprocessing_end": 1780166075946.6328,
+        "sentiment_end": 1780166075994.4014,
+        "signal_end": 1780166076010.529,
+        "websocket_delivery": 1780166076028.8408
+      },
+      "component_latencies_ms": {
+        "collection": 11.092041015625,
+        "preprocessing": 15.820556640625,
+        "sentiment": 47.7685546875,
+        "signal": 16.127685546875,
+        "delivery": 18.311767578125
+      },
+      "total_latency_ms": 109.12060546875
+    },
+    {
+      "item_id": "synthetic-00017",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166076028.8408,
+        "collection_end": 1780166076057.0884,
+        "preprocessing_end": 1780166076083.5686,
+        "sentiment_end": 1780166076124.8132,
+        "signal_end": 1780166076159.4897,
+        "websocket_delivery": 1780166076193.7654
+      },
+      "component_latencies_ms": {
+        "collection": 28.24755859375,
+        "preprocessing": 26.480224609375,
+        "sentiment": 41.24462890625,
+        "signal": 34.676513671875,
+        "delivery": 34.275634765625
+      },
+      "total_latency_ms": 164.924560546875
+    },
+    {
+      "item_id": "synthetic-00018",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166076193.7654,
+        "collection_end": 1780166076243.7222,
+        "preprocessing_end": 1780166076267.6138,
+        "sentiment_end": 1780166076297.1316,
+        "signal_end": 1780166076313.6003,
+        "websocket_delivery": 1780166076362.2454
+      },
+      "component_latencies_ms": {
+        "collection": 49.956787109375,
+        "preprocessing": 23.8916015625,
+        "sentiment": 29.517822265625,
+        "signal": 16.46875,
+        "delivery": 48.64501953125
+      },
+      "total_latency_ms": 168.47998046875
+    },
+    {
+      "item_id": "synthetic-00019",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166076362.2454,
+        "collection_end": 1780166076396.8862,
+        "preprocessing_end": 1780166076447.4111,
+        "sentiment_end": 1780166076512.5186,
+        "signal_end": 1780166076530.4255,
+        "websocket_delivery": 1780166076540.3804
+      },
+      "component_latencies_ms": {
+        "collection": 34.640869140625,
+        "preprocessing": 50.52490234375,
+        "sentiment": 65.107421875,
+        "signal": 17.906982421875,
+        "delivery": 9.954833984375
+      },
+      "total_latency_ms": 178.135009765625
+    },
+    {
+      "item_id": "synthetic-00020",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166076540.3804,
+        "collection_end": 1780166076576.378,
+        "preprocessing_end": 1780166076594.434,
+        "sentiment_end": 1780166076648.1558,
+        "signal_end": 1780166076664.0845,
+        "websocket_delivery": 1780166076695.9438
+      },
+      "component_latencies_ms": {
+        "collection": 35.99755859375,
+        "preprocessing": 18.05615234375,
+        "sentiment": 53.7216796875,
+        "signal": 15.9287109375,
+        "delivery": 31.859375
+      },
+      "total_latency_ms": 155.5634765625
+    },
+    {
+      "item_id": "synthetic-00021",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166076695.9438,
+        "collection_end": 1780166076713.9045,
+        "preprocessing_end": 1780166076729.9194,
+        "sentiment_end": 1780166076763.8923,
+        "signal_end": 1780166076777.9,
+        "websocket_delivery": 1780166076793.8638
+      },
+      "component_latencies_ms": {
+        "collection": 17.960693359375,
+        "preprocessing": 16.014892578125,
+        "sentiment": 33.972900390625,
+        "signal": 14.007568359375,
+        "delivery": 15.9638671875
+      },
+      "total_latency_ms": 97.919921875
+    },
+    {
+      "item_id": "synthetic-00022",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166076793.8638,
+        "collection_end": 1780166076807.7712,
+        "preprocessing_end": 1780166076825.7595,
+        "sentiment_end": 1780166076861.4824,
+        "signal_end": 1780166076875.6267,
+        "websocket_delivery": 1780166076880.225
+      },
+      "component_latencies_ms": {
+        "collection": 13.907470703125,
+        "preprocessing": 17.98828125,
+        "sentiment": 35.722900390625,
+        "signal": 14.144287109375,
+        "delivery": 4.598388671875
+      },
+      "total_latency_ms": 86.361328125
+    },
+    {
+      "item_id": "synthetic-00023",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166076880.225,
+        "collection_end": 1780166076894.1252,
+        "preprocessing_end": 1780166076914.056,
+        "sentiment_end": 1780166076949.0654,
+        "signal_end": 1780166076971.0808,
+        "websocket_delivery": 1780166076982.9326
+      },
+      "component_latencies_ms": {
+        "collection": 13.900146484375,
+        "preprocessing": 19.9306640625,
+        "sentiment": 35.009521484375,
+        "signal": 22.015380859375,
+        "delivery": 11.851806640625
+      },
+      "total_latency_ms": 102.70751953125
+    },
+    {
+      "item_id": "synthetic-00024",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166076983.4473,
+        "collection_end": 1780166076998.2754,
+        "preprocessing_end": 1780166077007.054,
+        "sentiment_end": 1780166077038.9077,
+        "signal_end": 1780166077050.354,
+        "websocket_delivery": 1780166077060.9885
+      },
+      "component_latencies_ms": {
+        "collection": 14.828125,
+        "preprocessing": 8.778564453125,
+        "sentiment": 31.853759765625,
+        "signal": 11.4462890625,
+        "delivery": 10.634521484375
+      },
+      "total_latency_ms": 77.541259765625
+    },
+    {
+      "item_id": "synthetic-00025",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166077063.7058,
+        "collection_end": 1780166077076.249,
+        "preprocessing_end": 1780166077085.1584,
+        "sentiment_end": 1780166077112.4475,
+        "signal_end": 1780166077131.409,
+        "websocket_delivery": 1780166077143.277
+      },
+      "component_latencies_ms": {
+        "collection": 12.543212890625,
+        "preprocessing": 8.909423828125,
+        "sentiment": 27.2890625,
+        "signal": 18.96142578125,
+        "delivery": 11.8681640625
+      },
+      "total_latency_ms": 79.5712890625
+    },
+    {
+      "item_id": "synthetic-00026",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166077143.277,
+        "collection_end": 1780166077160.6917,
+        "preprocessing_end": 1780166077181.4963,
+        "sentiment_end": 1780166077217.0774,
+        "signal_end": 1780166077232.826,
+        "websocket_delivery": 1780166077248.691
+      },
+      "component_latencies_ms": {
+        "collection": 17.41455078125,
+        "preprocessing": 20.8046875,
+        "sentiment": 35.5810546875,
+        "signal": 15.74853515625,
+        "delivery": 15.864990234375
+      },
+      "total_latency_ms": 105.413818359375
+    },
+    {
+      "item_id": "synthetic-00027",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166077248.691,
+        "collection_end": 1780166077264.8289,
+        "preprocessing_end": 1780166077280.6113,
+        "sentiment_end": 1780166077307.7024,
+        "signal_end": 1780166077322.538,
+        "websocket_delivery": 1780166077338.4844
+      },
+      "component_latencies_ms": {
+        "collection": 16.137939453125,
+        "preprocessing": 15.782470703125,
+        "sentiment": 27.091064453125,
+        "signal": 14.835693359375,
+        "delivery": 15.9462890625
+      },
+      "total_latency_ms": 89.79345703125
+    },
+    {
+      "item_id": "synthetic-00028",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166077338.4844,
+        "collection_end": 1780166077351.5496,
+        "preprocessing_end": 1780166077367.7058,
+        "sentiment_end": 1780166077399.5842,
+        "signal_end": 1780166077415.406,
+        "websocket_delivery": 1780166077431.346
+      },
+      "component_latencies_ms": {
+        "collection": 13.065185546875,
+        "preprocessing": 16.15625,
+        "sentiment": 31.87841796875,
+        "signal": 15.82177734375,
+        "delivery": 15.93994140625
+      },
+      "total_latency_ms": 92.861572265625
+    },
+    {
+      "item_id": "synthetic-00029",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166077431.346,
+        "collection_end": 1780166077447.2043,
+        "preprocessing_end": 1780166077457.7969,
+        "sentiment_end": 1780166077484.8142,
+        "signal_end": 1780166077501.015,
+        "websocket_delivery": 1780166077517.095
+      },
+      "component_latencies_ms": {
+        "collection": 15.8583984375,
+        "preprocessing": 10.592529296875,
+        "sentiment": 27.017333984375,
+        "signal": 16.20068359375,
+        "delivery": 16.080078125
+      },
+      "total_latency_ms": 85.7490234375
+    },
+    {
+      "item_id": "synthetic-00030",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166077517.095,
+        "collection_end": 1780166077533.2383,
+        "preprocessing_end": 1780166077549.458,
+        "sentiment_end": 1780166077581.6128,
+        "signal_end": 1780166077597.4683,
+        "websocket_delivery": 1780166077613.1875
+      },
+      "component_latencies_ms": {
+        "collection": 16.143310546875,
+        "preprocessing": 16.2197265625,
+        "sentiment": 32.15478515625,
+        "signal": 15.85546875,
+        "delivery": 15.71923828125
+      },
+      "total_latency_ms": 96.092529296875
+    },
+    {
+      "item_id": "synthetic-00031",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166077613.1875,
+        "collection_end": 1780166077621.8108,
+        "preprocessing_end": 1780166077635.8662,
+        "sentiment_end": 1780166077667.6208,
+        "signal_end": 1780166077683.7178,
+        "websocket_delivery": 1780166077699.9214
+      },
+      "component_latencies_ms": {
+        "collection": 8.623291015625,
+        "preprocessing": 14.055419921875,
+        "sentiment": 31.754638671875,
+        "signal": 16.096923828125,
+        "delivery": 16.20361328125
+      },
+      "total_latency_ms": 86.73388671875
+    },
+    {
+      "item_id": "synthetic-00032",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166077699.9214,
+        "collection_end": 1780166077715.6758,
+        "preprocessing_end": 1780166077724.6216,
+        "sentiment_end": 1780166077754.8574,
+        "signal_end": 1780166077761.5686,
+        "websocket_delivery": 1780166077770.7397
+      },
+      "component_latencies_ms": {
+        "collection": 15.75439453125,
+        "preprocessing": 8.94580078125,
+        "sentiment": 30.23583984375,
+        "signal": 6.711181640625,
+        "delivery": 9.171142578125
+      },
+      "total_latency_ms": 70.818359375
+    },
+    {
+      "item_id": "synthetic-00033",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166077770.7397,
+        "collection_end": 1780166077780.942,
+        "preprocessing_end": 1780166077790.5955,
+        "sentiment_end": 1780166077819.1885,
+        "signal_end": 1780166077841.4773,
+        "websocket_delivery": 1780166077843.5886
+      },
+      "component_latencies_ms": {
+        "collection": 10.2021484375,
+        "preprocessing": 9.653564453125,
+        "sentiment": 28.593017578125,
+        "signal": 22.288818359375,
+        "delivery": 2.111328125
+      },
+      "total_latency_ms": 72.848876953125
+    },
+    {
+      "item_id": "synthetic-00034",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166077843.5886,
+        "collection_end": 1780166077857.9202,
+        "preprocessing_end": 1780166077868.4172,
+        "sentiment_end": 1780166077898.173,
+        "signal_end": 1780166077908.3381,
+        "websocket_delivery": 1780166077923.692
+      },
+      "component_latencies_ms": {
+        "collection": 14.33154296875,
+        "preprocessing": 10.4970703125,
+        "sentiment": 29.755859375,
+        "signal": 10.1650390625,
+        "delivery": 15.353759765625
+      },
+      "total_latency_ms": 80.103271484375
+    },
+    {
+      "item_id": "synthetic-00035",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166077923.692,
+        "collection_end": 1780166077935.1536,
+        "preprocessing_end": 1780166077950.9714,
+        "sentiment_end": 1780166077983.054,
+        "signal_end": 1780166077999.2007,
+        "websocket_delivery": 1780166078015.1555
+      },
+      "component_latencies_ms": {
+        "collection": 11.461669921875,
+        "preprocessing": 15.81787109375,
+        "sentiment": 32.08251953125,
+        "signal": 16.146728515625,
+        "delivery": 15.954833984375
+      },
+      "total_latency_ms": 91.463623046875
+    },
+    {
+      "item_id": "synthetic-00036",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166078015.1555,
+        "collection_end": 1780166078023.7256,
+        "preprocessing_end": 1780166078035.9407,
+        "sentiment_end": 1780166078067.6252,
+        "signal_end": 1780166078083.4578,
+        "websocket_delivery": 1780166078099.6458
+      },
+      "component_latencies_ms": {
+        "collection": 8.570068359375,
+        "preprocessing": 12.215087890625,
+        "sentiment": 31.6845703125,
+        "signal": 15.83251953125,
+        "delivery": 16.18798828125
+      },
+      "total_latency_ms": 84.490234375
+    },
+    {
+      "item_id": "synthetic-00037",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166078099.6458,
+        "collection_end": 1780166078115.7866,
+        "preprocessing_end": 1780166078131.8757,
+        "sentiment_end": 1780166078163.607,
+        "signal_end": 1780166078179.747,
+        "websocket_delivery": 1780166078188.277
+      },
+      "component_latencies_ms": {
+        "collection": 16.140869140625,
+        "preprocessing": 16.089111328125,
+        "sentiment": 31.731201171875,
+        "signal": 16.14013671875,
+        "delivery": 8.530029296875
+      },
+      "total_latency_ms": 88.63134765625
+    },
+    {
+      "item_id": "synthetic-00038",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166078188.277,
+        "collection_end": 1780166078205.277,
+        "preprocessing_end": 1780166078218.341,
+        "sentiment_end": 1780166078250.0059,
+        "signal_end": 1780166078266.05,
+        "websocket_delivery": 1780166078277.6885
+      },
+      "component_latencies_ms": {
+        "collection": 17.0,
+        "preprocessing": 13.06396484375,
+        "sentiment": 31.664794921875,
+        "signal": 16.044189453125,
+        "delivery": 11.638427734375
+      },
+      "total_latency_ms": 89.411376953125
+    },
+    {
+      "item_id": "synthetic-00039",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166078277.6885,
+        "collection_end": 1780166078287.856,
+        "preprocessing_end": 1780166078293.4824,
+        "sentiment_end": 1780166078327.0889,
+        "signal_end": 1780166078334.822,
+        "websocket_delivery": 1780166078343.5393
+      },
+      "component_latencies_ms": {
+        "collection": 10.16748046875,
+        "preprocessing": 5.62646484375,
+        "sentiment": 33.6064453125,
+        "signal": 7.733154296875,
+        "delivery": 8.71728515625
+      },
+      "total_latency_ms": 65.850830078125
+    },
+    {
+      "item_id": "synthetic-00040",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166078343.5393,
+        "collection_end": 1780166078359.7456,
+        "preprocessing_end": 1780166078379.31,
+        "sentiment_end": 1780166078401.13,
+        "signal_end": 1780166078409.3513,
+        "websocket_delivery": 1780166078428.1226
+      },
+      "component_latencies_ms": {
+        "collection": 16.206298828125,
+        "preprocessing": 19.564453125,
+        "sentiment": 21.81982421875,
+        "signal": 8.221435546875,
+        "delivery": 18.771240234375
+      },
+      "total_latency_ms": 84.583251953125
+    },
+    {
+      "item_id": "synthetic-00041",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166078428.1226,
+        "collection_end": 1780166078446.444,
+        "preprocessing_end": 1780166078462.5222,
+        "sentiment_end": 1780166078497.8713,
+        "signal_end": 1780166078513.672,
+        "websocket_delivery": 1780166078522.5752
+      },
+      "component_latencies_ms": {
+        "collection": 18.321533203125,
+        "preprocessing": 16.078125,
+        "sentiment": 35.34912109375,
+        "signal": 15.80078125,
+        "delivery": 8.903076171875
+      },
+      "total_latency_ms": 94.45263671875
+    },
+    {
+      "item_id": "synthetic-00042",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166078522.5752,
+        "collection_end": 1780166078537.5754,
+        "preprocessing_end": 1780166078557.5276,
+        "sentiment_end": 1780166078591.1006,
+        "signal_end": 1780166078601.6309,
+        "websocket_delivery": 1780166078617.4688
+      },
+      "component_latencies_ms": {
+        "collection": 15.000244140625,
+        "preprocessing": 19.9521484375,
+        "sentiment": 33.572998046875,
+        "signal": 10.5302734375,
+        "delivery": 15.837890625
+      },
+      "total_latency_ms": 94.8935546875
+    },
+    {
+      "item_id": "synthetic-00043",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166078617.4688,
+        "collection_end": 1780166078633.194,
+        "preprocessing_end": 1780166078648.8574,
+        "sentiment_end": 1780166078680.6116,
+        "signal_end": 1780166078693.6611,
+        "websocket_delivery": 1780166078711.6501
+      },
+      "component_latencies_ms": {
+        "collection": 15.725341796875,
+        "preprocessing": 15.663330078125,
+        "sentiment": 31.754150390625,
+        "signal": 13.049560546875,
+        "delivery": 17.989013671875
+      },
+      "total_latency_ms": 94.181396484375
+    },
+    {
+      "item_id": "synthetic-00044",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166078711.6501,
+        "collection_end": 1780166078722.9324,
+        "preprocessing_end": 1780166078734.8293,
+        "sentiment_end": 1780166078766.0378,
+        "signal_end": 1780166078781.9722,
+        "websocket_delivery": 1780166078794.8247
+      },
+      "component_latencies_ms": {
+        "collection": 11.2822265625,
+        "preprocessing": 11.89697265625,
+        "sentiment": 31.20849609375,
+        "signal": 15.934326171875,
+        "delivery": 12.8525390625
+      },
+      "total_latency_ms": 83.174560546875
+    },
+    {
+      "item_id": "synthetic-00045",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166078794.8247,
+        "collection_end": 1780166078816.6724,
+        "preprocessing_end": 1780166078830.8452,
+        "sentiment_end": 1780166078866.1953,
+        "signal_end": 1780166078879.6772,
+        "websocket_delivery": 1780166078890.0898
+      },
+      "component_latencies_ms": {
+        "collection": 21.84765625,
+        "preprocessing": 14.1728515625,
+        "sentiment": 35.35009765625,
+        "signal": 13.48193359375,
+        "delivery": 10.41259765625
+      },
+      "total_latency_ms": 95.26513671875
+    },
+    {
+      "item_id": "synthetic-00046",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166078890.0898,
+        "collection_end": 1780166078905.733,
+        "preprocessing_end": 1780166078909.775,
+        "sentiment_end": 1780166078940.1948,
+        "signal_end": 1780166078956.3254,
+        "websocket_delivery": 1780166078958.3398
+      },
+      "component_latencies_ms": {
+        "collection": 15.64306640625,
+        "preprocessing": 4.0419921875,
+        "sentiment": 30.419921875,
+        "signal": 16.130615234375,
+        "delivery": 2.014404296875
+      },
+      "total_latency_ms": 68.25
+    },
+    {
+      "item_id": "synthetic-00047",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166078958.3398,
+        "collection_end": 1780166078972.623,
+        "preprocessing_end": 1780166078991.031,
+        "sentiment_end": 1780166079026.6025,
+        "signal_end": 1780166079043.651,
+        "websocket_delivery": 1780166079058.1907
+      },
+      "component_latencies_ms": {
+        "collection": 14.283203125,
+        "preprocessing": 18.407958984375,
+        "sentiment": 35.571533203125,
+        "signal": 17.04833984375,
+        "delivery": 14.539794921875
+      },
+      "total_latency_ms": 99.850830078125
+    },
+    {
+      "item_id": "synthetic-00048",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166079058.1907,
+        "collection_end": 1780166079073.6042,
+        "preprocessing_end": 1780166079088.4856,
+        "sentiment_end": 1780166079120.785,
+        "signal_end": 1780166079122.7976,
+        "websocket_delivery": 1780166079134.925
+      },
+      "component_latencies_ms": {
+        "collection": 15.41357421875,
+        "preprocessing": 14.88134765625,
+        "sentiment": 32.29931640625,
+        "signal": 2.0126953125,
+        "delivery": 12.12744140625
+      },
+      "total_latency_ms": 76.734375
+    },
+    {
+      "item_id": "synthetic-00049",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166079134.925,
+        "collection_end": 1780166079150.8577,
+        "preprocessing_end": 1780166079166.7124,
+        "sentiment_end": 1780166079191.5972,
+        "signal_end": 1780166079205.1685,
+        "websocket_delivery": 1780166079211.3171
+      },
+      "component_latencies_ms": {
+        "collection": 15.9326171875,
+        "preprocessing": 15.854736328125,
+        "sentiment": 24.884765625,
+        "signal": 13.5712890625,
+        "delivery": 6.148681640625
+      },
+      "total_latency_ms": 76.39208984375
+    },
+    {
+      "item_id": "synthetic-00050",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166079211.3171,
+        "collection_end": 1780166079222.0732,
+        "preprocessing_end": 1780166079241.1755,
+        "sentiment_end": 1780166079277.308,
+        "signal_end": 1780166079289.0598,
+        "websocket_delivery": 1780166079295.1294
+      },
+      "component_latencies_ms": {
+        "collection": 10.756103515625,
+        "preprocessing": 19.102294921875,
+        "sentiment": 36.132568359375,
+        "signal": 11.751708984375,
+        "delivery": 6.069580078125
+      },
+      "total_latency_ms": 83.812255859375
+    },
+    {
+      "item_id": "synthetic-00051",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166079295.1294,
+        "collection_end": 1780166079305.235,
+        "preprocessing_end": 1780166079327.6711,
+        "sentiment_end": 1780166079358.8276,
+        "signal_end": 1780166079383.4597,
+        "websocket_delivery": 1780166079396.9844
+      },
+      "component_latencies_ms": {
+        "collection": 10.105712890625,
+        "preprocessing": 22.43603515625,
+        "sentiment": 31.156494140625,
+        "signal": 24.632080078125,
+        "delivery": 13.524658203125
+      },
+      "total_latency_ms": 101.85498046875
+    },
+    {
+      "item_id": "synthetic-00052",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166079396.9844,
+        "collection_end": 1780166079409.8953,
+        "preprocessing_end": 1780166079423.3145,
+        "sentiment_end": 1780166079456.137,
+        "signal_end": 1780166079464.0122,
+        "websocket_delivery": 1780166079476.4607
+      },
+      "component_latencies_ms": {
+        "collection": 12.910888671875,
+        "preprocessing": 13.419189453125,
+        "sentiment": 32.822509765625,
+        "signal": 7.875244140625,
+        "delivery": 12.448486328125
+      },
+      "total_latency_ms": 79.476318359375
+    },
+    {
+      "item_id": "synthetic-00053",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166079476.4607,
+        "collection_end": 1780166079489.7205,
+        "preprocessing_end": 1780166079504.6833,
+        "sentiment_end": 1780166079543.4653,
+        "signal_end": 1780166079553.8228,
+        "websocket_delivery": 1780166079561.185
+      },
+      "component_latencies_ms": {
+        "collection": 13.259765625,
+        "preprocessing": 14.962890625,
+        "sentiment": 38.781982421875,
+        "signal": 10.357421875,
+        "delivery": 7.3623046875
+      },
+      "total_latency_ms": 84.724365234375
+    },
+    {
+      "item_id": "synthetic-00054",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166079561.185,
+        "collection_end": 1780166079572.2595,
+        "preprocessing_end": 1780166079588.7878,
+        "sentiment_end": 1780166079612.0803,
+        "signal_end": 1780166079622.2415,
+        "websocket_delivery": 1780166079637.921
+      },
+      "component_latencies_ms": {
+        "collection": 11.074462890625,
+        "preprocessing": 16.5283203125,
+        "sentiment": 23.29248046875,
+        "signal": 10.1611328125,
+        "delivery": 15.679443359375
+      },
+      "total_latency_ms": 76.73583984375
+    },
+    {
+      "item_id": "synthetic-00055",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166079637.921,
+        "collection_end": 1780166079658.324,
+        "preprocessing_end": 1780166079670.5603,
+        "sentiment_end": 1780166079694.8547,
+        "signal_end": 1780166079704.4624,
+        "websocket_delivery": 1780166079720.3716
+      },
+      "component_latencies_ms": {
+        "collection": 20.403076171875,
+        "preprocessing": 12.236328125,
+        "sentiment": 24.29443359375,
+        "signal": 9.607666015625,
+        "delivery": 15.9091796875
+      },
+      "total_latency_ms": 82.45068359375
+    },
+    {
+      "item_id": "synthetic-00056",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166079720.3716,
+        "collection_end": 1780166079736.6035,
+        "preprocessing_end": 1780166079754.064,
+        "sentiment_end": 1780166079778.4363,
+        "signal_end": 1780166079795.721,
+        "websocket_delivery": 1780166079806.801
+      },
+      "component_latencies_ms": {
+        "collection": 16.23193359375,
+        "preprocessing": 17.46044921875,
+        "sentiment": 24.372314453125,
+        "signal": 17.28466796875,
+        "delivery": 11.080078125
+      },
+      "total_latency_ms": 86.429443359375
+    },
+    {
+      "item_id": "synthetic-00057",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166079806.801,
+        "collection_end": 1780166079820.818,
+        "preprocessing_end": 1780166079829.2104,
+        "sentiment_end": 1780166079854.012,
+        "signal_end": 1780166079870.7725,
+        "websocket_delivery": 1780166079888.526
+      },
+      "component_latencies_ms": {
+        "collection": 14.01708984375,
+        "preprocessing": 8.392333984375,
+        "sentiment": 24.801513671875,
+        "signal": 16.760498046875,
+        "delivery": 17.75341796875
+      },
+      "total_latency_ms": 81.724853515625
+    },
+    {
+      "item_id": "synthetic-00058",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166079888.526,
+        "collection_end": 1780166079905.201,
+        "preprocessing_end": 1780166079921.3357,
+        "sentiment_end": 1780166079953.5808,
+        "signal_end": 1780166079974.62,
+        "websocket_delivery": 1780166079988.1528
+      },
+      "component_latencies_ms": {
+        "collection": 16.675048828125,
+        "preprocessing": 16.134765625,
+        "sentiment": 32.2451171875,
+        "signal": 21.039306640625,
+        "delivery": 13.53271484375
+      },
+      "total_latency_ms": 99.626953125
+    },
+    {
+      "item_id": "synthetic-00059",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166079988.1528,
+        "collection_end": 1780166080001.4321,
+        "preprocessing_end": 1780166080017.493,
+        "sentiment_end": 1780166080049.2869,
+        "signal_end": 1780166080065.362,
+        "websocket_delivery": 1780166080081.4602
+      },
+      "component_latencies_ms": {
+        "collection": 13.279296875,
+        "preprocessing": 16.060791015625,
+        "sentiment": 31.7939453125,
+        "signal": 16.0751953125,
+        "delivery": 16.09814453125
+      },
+      "total_latency_ms": 93.307373046875
+    },
+    {
+      "item_id": "synthetic-00060",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166080081.4602,
+        "collection_end": 1780166080097.2844,
+        "preprocessing_end": 1780166080113.3435,
+        "sentiment_end": 1780166080145.1914,
+        "signal_end": 1780166080161.3206,
+        "websocket_delivery": 1780166080172.1663
+      },
+      "component_latencies_ms": {
+        "collection": 15.82421875,
+        "preprocessing": 16.05908203125,
+        "sentiment": 31.847900390625,
+        "signal": 16.129150390625,
+        "delivery": 10.845703125
+      },
+      "total_latency_ms": 90.7060546875
+    },
+    {
+      "item_id": "synthetic-00061",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166080172.1663,
+        "collection_end": 1780166080185.2327,
+        "preprocessing_end": 1780166080201.4446,
+        "sentiment_end": 1780166080233.5713,
+        "signal_end": 1780166080249.3838,
+        "websocket_delivery": 1780166080266.3499
+      },
+      "component_latencies_ms": {
+        "collection": 13.06640625,
+        "preprocessing": 16.2119140625,
+        "sentiment": 32.126708984375,
+        "signal": 15.8125,
+        "delivery": 16.966064453125
+      },
+      "total_latency_ms": 94.18359375
+    },
+    {
+      "item_id": "synthetic-00062",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166080266.3499,
+        "collection_end": 1780166080278.7766,
+        "preprocessing_end": 1780166080293.8684,
+        "sentiment_end": 1780166080323.1555,
+        "signal_end": 1780166080329.515,
+        "websocket_delivery": 1780166080338.9553
+      },
+      "component_latencies_ms": {
+        "collection": 12.4267578125,
+        "preprocessing": 15.091796875,
+        "sentiment": 29.287109375,
+        "signal": 6.359375,
+        "delivery": 9.4404296875
+      },
+      "total_latency_ms": 72.60546875
+    },
+    {
+      "item_id": "synthetic-00063",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166080338.9553,
+        "collection_end": 1780166080346.6702,
+        "preprocessing_end": 1780166080356.442,
+        "sentiment_end": 1780166080378.3325,
+        "signal_end": 1780166080388.7556,
+        "websocket_delivery": 1780166080406.5156
+      },
+      "component_latencies_ms": {
+        "collection": 7.71484375,
+        "preprocessing": 9.771728515625,
+        "sentiment": 21.890625,
+        "signal": 10.423095703125,
+        "delivery": 17.760009765625
+      },
+      "total_latency_ms": 67.560302734375
+    },
+    {
+      "item_id": "synthetic-00064",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166080406.5156,
+        "collection_end": 1780166080418.2097,
+        "preprocessing_end": 1780166080439.3867,
+        "sentiment_end": 1780166080471.1323,
+        "signal_end": 1780166080479.037,
+        "websocket_delivery": 1780166080490.144
+      },
+      "component_latencies_ms": {
+        "collection": 11.694091796875,
+        "preprocessing": 21.177001953125,
+        "sentiment": 31.74560546875,
+        "signal": 7.90478515625,
+        "delivery": 11.10693359375
+      },
+      "total_latency_ms": 83.62841796875
+    },
+    {
+      "item_id": "synthetic-00065",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166080490.144,
+        "collection_end": 1780166080503.7825,
+        "preprocessing_end": 1780166080523.6343,
+        "sentiment_end": 1780166080554.1594,
+        "signal_end": 1780166080562.4988,
+        "websocket_delivery": 1780166080573.3643
+      },
+      "component_latencies_ms": {
+        "collection": 13.638427734375,
+        "preprocessing": 19.851806640625,
+        "sentiment": 30.525146484375,
+        "signal": 8.33935546875,
+        "delivery": 10.865478515625
+      },
+      "total_latency_ms": 83.22021484375
+    },
+    {
+      "item_id": "synthetic-00066",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166080573.3643,
+        "collection_end": 1780166080587.1023,
+        "preprocessing_end": 1780166080604.8003,
+        "sentiment_end": 1780166080637.2478,
+        "signal_end": 1780166080653.1208,
+        "websocket_delivery": 1780166080672.1382
+      },
+      "component_latencies_ms": {
+        "collection": 13.738037109375,
+        "preprocessing": 17.697998046875,
+        "sentiment": 32.447509765625,
+        "signal": 15.873046875,
+        "delivery": 19.017333984375
+      },
+      "total_latency_ms": 98.77392578125
+    },
+    {
+      "item_id": "synthetic-00067",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166080672.1382,
+        "collection_end": 1780166080678.2852,
+        "preprocessing_end": 1780166080687.8784,
+        "sentiment_end": 1780166080720.9314,
+        "signal_end": 1780166080724.2068,
+        "websocket_delivery": 1780166080736.6614
+      },
+      "component_latencies_ms": {
+        "collection": 6.14697265625,
+        "preprocessing": 9.59326171875,
+        "sentiment": 33.052978515625,
+        "signal": 3.275390625,
+        "delivery": 12.45458984375
+      },
+      "total_latency_ms": 64.523193359375
+    },
+    {
+      "item_id": "synthetic-00068",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166080736.6614,
+        "collection_end": 1780166080745.1653,
+        "preprocessing_end": 1780166080756.2083,
+        "sentiment_end": 1780166080787.9875,
+        "signal_end": 1780166080803.771,
+        "websocket_delivery": 1780166080821.559
+      },
+      "component_latencies_ms": {
+        "collection": 8.50390625,
+        "preprocessing": 11.04296875,
+        "sentiment": 31.779296875,
+        "signal": 15.783447265625,
+        "delivery": 17.7880859375
+      },
+      "total_latency_ms": 84.897705078125
+    },
+    {
+      "item_id": "synthetic-00069",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166080821.559,
+        "collection_end": 1780166080843.3208,
+        "preprocessing_end": 1780166080851.5593,
+        "sentiment_end": 1780166080876.329,
+        "signal_end": 1780166080888.412,
+        "websocket_delivery": 1780166080898.5696
+      },
+      "component_latencies_ms": {
+        "collection": 21.76171875,
+        "preprocessing": 8.238525390625,
+        "sentiment": 24.769775390625,
+        "signal": 12.0830078125,
+        "delivery": 10.157470703125
+      },
+      "total_latency_ms": 77.010498046875
+    },
+    {
+      "item_id": "synthetic-00070",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166080898.5696,
+        "collection_end": 1780166080908.6448,
+        "preprocessing_end": 1780166080915.8728,
+        "sentiment_end": 1780166080943.2722,
+        "signal_end": 1780166080945.981,
+        "websocket_delivery": 1780166080955.753
+      },
+      "component_latencies_ms": {
+        "collection": 10.0751953125,
+        "preprocessing": 7.22802734375,
+        "sentiment": 27.3994140625,
+        "signal": 2.708740234375,
+        "delivery": 9.77197265625
+      },
+      "total_latency_ms": 57.183349609375
+    },
+    {
+      "item_id": "synthetic-00071",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166080955.753,
+        "collection_end": 1780166080972.8328,
+        "preprocessing_end": 1780166080991.254,
+        "sentiment_end": 1780166081023.5205,
+        "signal_end": 1780166081029.2913,
+        "websocket_delivery": 1780166081044.0413
+      },
+      "component_latencies_ms": {
+        "collection": 17.079833984375,
+        "preprocessing": 18.421142578125,
+        "sentiment": 32.2666015625,
+        "signal": 5.770751953125,
+        "delivery": 14.75
+      },
+      "total_latency_ms": 88.288330078125
+    },
+    {
+      "item_id": "synthetic-00072",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166081044.0413,
+        "collection_end": 1780166081047.3167,
+        "preprocessing_end": 1780166081055.7458,
+        "sentiment_end": 1780166081080.1426,
+        "signal_end": 1780166081090.5024,
+        "websocket_delivery": 1780166081097.5938
+      },
+      "component_latencies_ms": {
+        "collection": 3.275390625,
+        "preprocessing": 8.42919921875,
+        "sentiment": 24.396728515625,
+        "signal": 10.35986328125,
+        "delivery": 7.09130859375
+      },
+      "total_latency_ms": 53.552490234375
+    },
+    {
+      "item_id": "synthetic-00073",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166081097.5938,
+        "collection_end": 1780166081108.9333,
+        "preprocessing_end": 1780166081113.0667,
+        "sentiment_end": 1780166081143.3647,
+        "signal_end": 1780166081146.8398,
+        "websocket_delivery": 1780166081161.4717
+      },
+      "component_latencies_ms": {
+        "collection": 11.339599609375,
+        "preprocessing": 4.13330078125,
+        "sentiment": 30.298095703125,
+        "signal": 3.47509765625,
+        "delivery": 14.6318359375
+      },
+      "total_latency_ms": 63.8779296875
+    },
+    {
+      "item_id": "synthetic-00074",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166081161.4717,
+        "collection_end": 1780166081163.4927,
+        "preprocessing_end": 1780166081176.8757,
+        "sentiment_end": 1780166081208.8926,
+        "signal_end": 1780166081211.9373,
+        "websocket_delivery": 1780166081227.8127
+      },
+      "component_latencies_ms": {
+        "collection": 2.02099609375,
+        "preprocessing": 13.383056640625,
+        "sentiment": 32.016845703125,
+        "signal": 3.044677734375,
+        "delivery": 15.87548828125
+      },
+      "total_latency_ms": 66.341064453125
+    },
+    {
+      "item_id": "synthetic-00075",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166081227.8127,
+        "collection_end": 1780166081240.2834,
+        "preprocessing_end": 1780166081250.4768,
+        "sentiment_end": 1780166081279.9468,
+        "signal_end": 1780166081291.9597,
+        "websocket_delivery": 1780166081310.5276
+      },
+      "component_latencies_ms": {
+        "collection": 12.470703125,
+        "preprocessing": 10.193359375,
+        "sentiment": 29.469970703125,
+        "signal": 12.012939453125,
+        "delivery": 18.56787109375
+      },
+      "total_latency_ms": 82.71484375
+    },
+    {
+      "item_id": "synthetic-00076",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166081310.5276,
+        "collection_end": 1780166081313.8865,
+        "preprocessing_end": 1780166081324.7832,
+        "sentiment_end": 1780166081354.166,
+        "signal_end": 1780166081361.1406,
+        "websocket_delivery": 1780166081370.9285
+      },
+      "component_latencies_ms": {
+        "collection": 3.35888671875,
+        "preprocessing": 10.896728515625,
+        "sentiment": 29.3828125,
+        "signal": 6.974609375,
+        "delivery": 9.787841796875
+      },
+      "total_latency_ms": 60.40087890625
+    },
+    {
+      "item_id": "synthetic-00077",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166081370.9285,
+        "collection_end": 1780166081387.9722,
+        "preprocessing_end": 1780166081403.6538,
+        "sentiment_end": 1780166081424.681,
+        "signal_end": 1780166081436.3918,
+        "websocket_delivery": 1780166081458.9978
+      },
+      "component_latencies_ms": {
+        "collection": 17.043701171875,
+        "preprocessing": 15.681640625,
+        "sentiment": 21.027099609375,
+        "signal": 11.7109375,
+        "delivery": 22.60595703125
+      },
+      "total_latency_ms": 88.0693359375
+    },
+    {
+      "item_id": "synthetic-00078",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166081458.9978,
+        "collection_end": 1780166081470.9097,
+        "preprocessing_end": 1780166081487.4458,
+        "sentiment_end": 1780166081511.4875,
+        "signal_end": 1780166081528.329,
+        "websocket_delivery": 1780166081537.47
+      },
+      "component_latencies_ms": {
+        "collection": 11.911865234375,
+        "preprocessing": 16.5361328125,
+        "sentiment": 24.041748046875,
+        "signal": 16.841552734375,
+        "delivery": 9.140869140625
+      },
+      "total_latency_ms": 78.47216796875
+    },
+    {
+      "item_id": "synthetic-00079",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166081537.47,
+        "collection_end": 1780166081553.6245,
+        "preprocessing_end": 1780166081562.1028,
+        "sentiment_end": 1780166081587.5085,
+        "signal_end": 1780166081605.2625,
+        "websocket_delivery": 1780166081611.7856
+      },
+      "component_latencies_ms": {
+        "collection": 16.154541015625,
+        "preprocessing": 8.478271484375,
+        "sentiment": 25.40576171875,
+        "signal": 17.75390625,
+        "delivery": 6.523193359375
+      },
+      "total_latency_ms": 74.315673828125
+    },
+    {
+      "item_id": "synthetic-00080",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166081611.7856,
+        "collection_end": 1780166081620.814,
+        "preprocessing_end": 1780166081628.9885,
+        "sentiment_end": 1780166081655.9805,
+        "signal_end": 1780166081670.1367,
+        "websocket_delivery": 1780166081693.538
+      },
+      "component_latencies_ms": {
+        "collection": 9.0283203125,
+        "preprocessing": 8.174560546875,
+        "sentiment": 26.991943359375,
+        "signal": 14.15625,
+        "delivery": 23.4013671875
+      },
+      "total_latency_ms": 81.75244140625
+    },
+    {
+      "item_id": "synthetic-00081",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166081693.538,
+        "collection_end": 1780166081709.0503,
+        "preprocessing_end": 1780166081727.9739,
+        "sentiment_end": 1780166081762.0352,
+        "signal_end": 1780166081778.1357,
+        "websocket_delivery": 1780166081795.3616
+      },
+      "component_latencies_ms": {
+        "collection": 15.51220703125,
+        "preprocessing": 18.923583984375,
+        "sentiment": 34.061279296875,
+        "signal": 16.1005859375,
+        "delivery": 17.225830078125
+      },
+      "total_latency_ms": 101.823486328125
+    },
+    {
+      "item_id": "synthetic-00082",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166081795.3616,
+        "collection_end": 1780166081827.2402,
+        "preprocessing_end": 1780166081848.0554,
+        "sentiment_end": 1780166081893.087,
+        "signal_end": 1780166081909.0437,
+        "websocket_delivery": 1780166081917.1262
+      },
+      "component_latencies_ms": {
+        "collection": 31.878662109375,
+        "preprocessing": 20.815185546875,
+        "sentiment": 45.031494140625,
+        "signal": 15.956787109375,
+        "delivery": 8.08251953125
+      },
+      "total_latency_ms": 121.7646484375
+    },
+    {
+      "item_id": "synthetic-00083",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166081917.1262,
+        "collection_end": 1780166081929.247,
+        "preprocessing_end": 1780166081949.8428,
+        "sentiment_end": 1780166081983.3882,
+        "signal_end": 1780166081992.2712,
+        "websocket_delivery": 1780166082010.3745
+      },
+      "component_latencies_ms": {
+        "collection": 12.120849609375,
+        "preprocessing": 20.595703125,
+        "sentiment": 33.54541015625,
+        "signal": 8.883056640625,
+        "delivery": 18.103271484375
+      },
+      "total_latency_ms": 93.248291015625
+    },
+    {
+      "item_id": "synthetic-00084",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166082010.3745,
+        "collection_end": 1780166082028.0413,
+        "preprocessing_end": 1780166082049.7104,
+        "sentiment_end": 1780166082077.2266,
+        "signal_end": 1780166082095.7515,
+        "websocket_delivery": 1780166082114.891
+      },
+      "component_latencies_ms": {
+        "collection": 17.666748046875,
+        "preprocessing": 21.669189453125,
+        "sentiment": 27.51611328125,
+        "signal": 18.52490234375,
+        "delivery": 19.1396484375
+      },
+      "total_latency_ms": 104.5166015625
+    },
+    {
+      "item_id": "synthetic-00085",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166082114.891,
+        "collection_end": 1780166082129.0913,
+        "preprocessing_end": 1780166082139.3875,
+        "sentiment_end": 1780166082168.3213,
+        "signal_end": 1780166082184.1042,
+        "websocket_delivery": 1780166082199.7874
+      },
+      "component_latencies_ms": {
+        "collection": 14.2001953125,
+        "preprocessing": 10.296142578125,
+        "sentiment": 28.933837890625,
+        "signal": 15.782958984375,
+        "delivery": 15.68310546875
+      },
+      "total_latency_ms": 84.896240234375
+    },
+    {
+      "item_id": "synthetic-00086",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166082199.7874,
+        "collection_end": 1780166082215.908,
+        "preprocessing_end": 1780166082226.4395,
+        "sentiment_end": 1780166082257.6555,
+        "signal_end": 1780166082271.0947,
+        "websocket_delivery": 1780166082287.7905
+      },
+      "component_latencies_ms": {
+        "collection": 16.12060546875,
+        "preprocessing": 10.531494140625,
+        "sentiment": 31.216064453125,
+        "signal": 13.439208984375,
+        "delivery": 16.69580078125
+      },
+      "total_latency_ms": 88.003173828125
+    },
+    {
+      "item_id": "synthetic-00087",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166082287.7905,
+        "collection_end": 1780166082307.405,
+        "preprocessing_end": 1780166082323.226,
+        "sentiment_end": 1780166082355.5076,
+        "signal_end": 1780166082363.734,
+        "websocket_delivery": 1780166082374.8767
+      },
+      "component_latencies_ms": {
+        "collection": 19.614501953125,
+        "preprocessing": 15.821044921875,
+        "sentiment": 32.281494140625,
+        "signal": 8.226318359375,
+        "delivery": 11.142822265625
+      },
+      "total_latency_ms": 87.086181640625
+    },
+    {
+      "item_id": "synthetic-00088",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166082374.8767,
+        "collection_end": 1780166082386.7844,
+        "preprocessing_end": 1780166082404.755,
+        "sentiment_end": 1780166082437.025,
+        "signal_end": 1780166082454.2979,
+        "websocket_delivery": 1780166082474.9602
+      },
+      "component_latencies_ms": {
+        "collection": 11.90771484375,
+        "preprocessing": 17.970458984375,
+        "sentiment": 32.27001953125,
+        "signal": 17.27294921875,
+        "delivery": 20.662353515625
+      },
+      "total_latency_ms": 100.08349609375
+    },
+    {
+      "item_id": "synthetic-00089",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166082474.9602,
+        "collection_end": 1780166082489.4539,
+        "preprocessing_end": 1780166082509.0222,
+        "sentiment_end": 1780166082540.791,
+        "signal_end": 1780166082557.5688,
+        "websocket_delivery": 1780166082561.604
+      },
+      "component_latencies_ms": {
+        "collection": 14.49365234375,
+        "preprocessing": 19.568359375,
+        "sentiment": 31.768798828125,
+        "signal": 16.77783203125,
+        "delivery": 4.03515625
+      },
+      "total_latency_ms": 86.643798828125
+    },
+    {
+      "item_id": "synthetic-00090",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166082561.604,
+        "collection_end": 1780166082573.31,
+        "preprocessing_end": 1780166082579.6782,
+        "sentiment_end": 1780166082609.7444,
+        "signal_end": 1780166082621.6257,
+        "websocket_delivery": 1780166082638.1907
+      },
+      "component_latencies_ms": {
+        "collection": 11.7060546875,
+        "preprocessing": 6.3681640625,
+        "sentiment": 30.066162109375,
+        "signal": 11.88134765625,
+        "delivery": 16.56494140625
+      },
+      "total_latency_ms": 76.586669921875
+    },
+    {
+      "item_id": "synthetic-00091",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166082638.1907,
+        "collection_end": 1780166082654.9043,
+        "preprocessing_end": 1780166082674.71,
+        "sentiment_end": 1780166082710.0925,
+        "signal_end": 1780166082723.6602,
+        "websocket_delivery": 1780166082734.7483
+      },
+      "component_latencies_ms": {
+        "collection": 16.713623046875,
+        "preprocessing": 19.8056640625,
+        "sentiment": 35.382568359375,
+        "signal": 13.567626953125,
+        "delivery": 11.088134765625
+      },
+      "total_latency_ms": 96.5576171875
+    },
+    {
+      "item_id": "synthetic-00092",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166082734.7483,
+        "collection_end": 1780166082750.4832,
+        "preprocessing_end": 1780166082766.1284,
+        "sentiment_end": 1780166082797.9558,
+        "signal_end": 1780166082813.9622,
+        "websocket_delivery": 1780166082829.673
+      },
+      "component_latencies_ms": {
+        "collection": 15.73486328125,
+        "preprocessing": 15.645263671875,
+        "sentiment": 31.827392578125,
+        "signal": 16.00634765625,
+        "delivery": 15.7109375
+      },
+      "total_latency_ms": 94.9248046875
+    },
+    {
+      "item_id": "synthetic-00093",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166082829.673,
+        "collection_end": 1780166082840.096,
+        "preprocessing_end": 1780166082858.0242,
+        "sentiment_end": 1780166082884.6133,
+        "signal_end": 1780166082894.7554,
+        "websocket_delivery": 1780166082908.9468
+      },
+      "component_latencies_ms": {
+        "collection": 10.4228515625,
+        "preprocessing": 17.92822265625,
+        "sentiment": 26.589111328125,
+        "signal": 10.14208984375,
+        "delivery": 14.19140625
+      },
+      "total_latency_ms": 79.273681640625
+    },
+    {
+      "item_id": "synthetic-00094",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166082908.9468,
+        "collection_end": 1780166082925.1467,
+        "preprocessing_end": 1780166082943.619,
+        "sentiment_end": 1780166082968.847,
+        "signal_end": 1780166082984.6765,
+        "websocket_delivery": 1780166083000.428
+      },
+      "component_latencies_ms": {
+        "collection": 16.199951171875,
+        "preprocessing": 18.47216796875,
+        "sentiment": 25.22802734375,
+        "signal": 15.82958984375,
+        "delivery": 15.75146484375
+      },
+      "total_latency_ms": 91.481201171875
+    },
+    {
+      "item_id": "synthetic-00095",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166083000.428,
+        "collection_end": 1780166083016.5303,
+        "preprocessing_end": 1780166083032.5664,
+        "sentiment_end": 1780166083064.1477,
+        "signal_end": 1780166083080.2524,
+        "websocket_delivery": 1780166083096.0298
+      },
+      "component_latencies_ms": {
+        "collection": 16.102294921875,
+        "preprocessing": 16.0361328125,
+        "sentiment": 31.581298828125,
+        "signal": 16.104736328125,
+        "delivery": 15.77734375
+      },
+      "total_latency_ms": 95.601806640625
+    },
+    {
+      "item_id": "synthetic-00096",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166083096.0298,
+        "collection_end": 1780166083111.922,
+        "preprocessing_end": 1780166083124.5852,
+        "sentiment_end": 1780166083151.0806,
+        "signal_end": 1780166083166.8005,
+        "websocket_delivery": 1780166083182.4946
+      },
+      "component_latencies_ms": {
+        "collection": 15.892333984375,
+        "preprocessing": 12.6630859375,
+        "sentiment": 26.495361328125,
+        "signal": 15.719970703125,
+        "delivery": 15.694091796875
+      },
+      "total_latency_ms": 86.46484375
+    },
+    {
+      "item_id": "synthetic-00097",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166083182.4946,
+        "collection_end": 1780166083198.3113,
+        "preprocessing_end": 1780166083214.174,
+        "sentiment_end": 1780166083245.623,
+        "signal_end": 1780166083261.475,
+        "websocket_delivery": 1780166083272.4907
+      },
+      "component_latencies_ms": {
+        "collection": 15.816650390625,
+        "preprocessing": 15.86279296875,
+        "sentiment": 31.448974609375,
+        "signal": 15.85205078125,
+        "delivery": 11.015625
+      },
+      "total_latency_ms": 89.99609375
+    },
+    {
+      "item_id": "synthetic-00098",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166083272.4907,
+        "collection_end": 1780166083285.3665,
+        "preprocessing_end": 1780166083301.2734,
+        "sentiment_end": 1780166083333.1611,
+        "signal_end": 1780166083349.2878,
+        "websocket_delivery": 1780166083365.125
+      },
+      "component_latencies_ms": {
+        "collection": 12.875732421875,
+        "preprocessing": 15.906982421875,
+        "sentiment": 31.8876953125,
+        "signal": 16.126708984375,
+        "delivery": 15.837158203125
+      },
+      "total_latency_ms": 92.63427734375
+    },
+    {
+      "item_id": "synthetic-00099",
+      "timestamp": "2026-05-30T19:34:43.475016",
+      "events": {
+        "collection_start": 1780166083365.125,
+        "collection_end": 1780166083381.2927,
+        "preprocessing_end": 1780166083397.3462,
+        "sentiment_end": 1780166083429.7207,
+        "signal_end": 1780166083445.5303,
+        "websocket_delivery": 1780166083461.532
+      },
+      "component_latencies_ms": {
+        "collection": 16.167724609375,
+        "preprocessing": 16.053466796875,
+        "sentiment": 32.37451171875,
+        "signal": 15.8095703125,
+        "delivery": 16.001708984375
+      },
+      "total_latency_ms": 96.406982421875
+    }
+  ]
+}
