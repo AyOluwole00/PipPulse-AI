@@ -12,13 +12,17 @@ Acceptance criteria:
 
 import asyncio
 import json
+import sys
 from pathlib import Path
 from typing import List, Dict
 
+# Add backend to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import pytest
 
-from backend.app.utils.latency_tracker import LatencyTracker, LatencyAggregator
-from backend.tests.synthetic_news_generator import generate_balanced_items
+from app.utils.latency_tracker import LatencyTracker, LatencyAggregator
+from tests.synthetic_news_generator import generate_balanced_items
 
 
 @pytest.mark.asyncio
