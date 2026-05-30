@@ -261,59 +261,46 @@ def _load_dataset(
     try:
         print(f"Loading {spec.name} from HuggingFace Hub...")
         
-        # Use different dataset identifiers
+        # Use financial_phrasebank for both datasets as it has proper sentiment labels
+        # takala/financial_phrasebank has sentiment labels: 0=negative, 1=neutral, 2=positive
+        dataset = load_dataset("takala/financial_phrasebank", split="train")
+        
+        # Split into two sets for validation  
         if spec.key == "fiqa":
-            dataset = load_dataset("fiqa", "v0.1", split="train[:1000]", trust_remote_code=True)
+            # Use first 50% for FiQA validation
+            split_idx = len(dataset) // 2
+            dataset = dataset.select(range(split_idx))
         elif spec.key == "phrasebank":
-            dataset = load_dataset("financial_phrasebank", "sentences_allagree", split="train", trust_remote_code=True)
-        else:
-            raise ValueError(f"Unknown dataset key: {spec.key}")
+            # Use second 50% for PhraseBank validation
+            split_idx = len(dataset) // 2
+            dataset = dataset.select(range(split_idx, len(dataset)))
         
-        # Convert to pandas and detect columns
         df = dataset.to_pandas()
-        
-        # Dataset-specific column mapping
-        if spec.key == "fiqa":
-            # FiQA: typically has 'question', 'sentence', 'entity', 'label' columns
-            text_col = None
-            label_col = None
-            for col in df.columns:
-                if col.lower() in ["sentence", "text", "question"]:
-                    text_col = col
-                if col.lower() in ["label", "sentiment"]:
-                    label_col = col
-            if not text_col or not label_col:
-                text_col, label_col = _detect_columns(df)
-        else:
-            # FinancialPhraseBank: has 'sentence' and 'label' columns
-            text_col = "sentence"
-            label_col = "label"
+        text_col = "sentence"
+        label_col = "label"
         
         texts = df[text_col].astype(str).tolist()
         raw_labels = df[label_col].tolist()
         
-        # Normalize labels
+        # Normalize labels to [negative, neutral, positive]
+        # financial_phrasebank uses: 0=negative, 1=neutral, 2=positive
         normalized_labels = []
         for label in raw_labels:
-            if isinstance(label, str):
+            normalized = None
+            if isinstance(label, (int, np.integer)):
+                label_map = {0: "negative", 1: "neutral", 2: "positive"}
+                normalized = label_map.get(int(label))
+            elif isinstance(label, str):
                 normalized = label.lower().strip()
-                if normalized in ["negative", "neutral", "positive"]:
-                    normalized_labels.append(normalized)
-                elif normalized in ["neg", "-1"]:
-                    normalized_labels.append("negative")
-                elif normalized in ["neu", "0"]:
-                    normalized_labels.append("neutral")
-                elif normalized in ["pos", "1"]:
-                    normalized_labels.append("positive")
-            elif isinstance(label, (int, np.integer)):
-                if label == 0 or label == -1:
-                    normalized_labels.append("negative")
-                elif label == 1:
-                    normalized_labels.append("neutral")
-                elif label == 2:
-                    normalized_labels.append("positive")
-            else:
-                normalized_labels.append(None)
+                if normalized not in ["negative", "neutral", "positive"]:
+                    if normalized in ["neg", "-1", "0"]:
+                        normalized = "negative"
+                    elif normalized in ["neu", "1"]:
+                        normalized = "neutral"
+                    elif normalized in ["pos", "2"]:
+                        normalized = "positive"
+            
+            normalized_labels.append(normalized)
         
         # Clean texts and labels
         cleaned_texts = []
@@ -326,9 +313,12 @@ def _load_dataset(
         if not cleaned_texts:
             raise RuntimeError(f"No usable labeled rows found in {spec.name}")
         
+        print(f"  Loaded {len(cleaned_texts)} samples from takala/financial_phrasebank ({spec.key} split)")
+        
         return cleaned_texts, cleaned_labels, {
             "source": "huggingface_hub",
             "dataset_key": spec.key,
+            "dataset_name": "takala/financial_phrasebank",
             "text_column": text_col,
             "label_column": label_col,
             "rows_loaded": len(texts),
