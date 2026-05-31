@@ -136,4 +136,31 @@ export interface SystemStats {
     last_update?: string;
   };
   timestamp: string;
+  system?: {
+    cpu_percent: number;
+    memory_mb: number;
+    memory_percent: number;
+    uptime_seconds: number;
+    status: 'healthy' | 'degraded' | 'unhealthy';
+  };
+}
+
+export interface AdminConfig {
+  signal_thresholds: Record<string, {
+    buy: number;
+    sell: number;
+    hold: number;
+  }>;
+  source_weights: Record<string, number>;
+  time_windows: number[];
+  confidence_threshold: number;
+}
+
+export interface AdminStats {
+  cpu_percent: number;
+  memory_mb: number;
+  memory_percent: number;
+  uptime_seconds: number;
+  status: 'healthy' | 'degraded' | 'unhealthy';
+  last_update: string;
 }

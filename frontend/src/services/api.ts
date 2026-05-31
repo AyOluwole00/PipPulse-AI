@@ -153,52 +153,36 @@ class APIService {
 
   // Admin
   async getConfig(): Promise<SystemConfig> {
-    const response = await this.client.get('/api/admin/config');
-    return response.data;
-  }
-
-  async getThresholds() {
-    const response = await this.client.get('/api/admin/thresholds');
+    const response = await this.client.get('/admin/config');
     return response.data;
   }
 
   async updateThreshold(currencyPair: string, config: ThresholdConfig) {
-    const response = await this.client.put(`/api/admin/thresholds/${currencyPair}`, config);
-    return response.data;
-  }
-
-  async getSourceWeights() {
-    const response = await this.client.get('/api/admin/source-weights');
+    const response = await this.client.post('/admin/config/thresholds', {
+      pair: currencyPair,
+      buy_threshold: config.buy_threshold,
+      sell_threshold: config.sell_threshold
+    });
     return response.data;
   }
 
   async updateSourceWeight(source: string, weight: number) {
-    const response = await this.client.put('/api/admin/source-weights', { source, weight });
+    const response = await this.client.post('/admin/config/weights', {
+      source,
+      weight
+    });
     return response.data;
   }
 
-  async getTimeWindows() {
-    const response = await this.client.get('/api/admin/time-windows');
-    return response.data;
-  }
-
-  async updateTimeWindow(name: string, minutes: number) {
-    const response = await this.client.put('/api/admin/time-windows', { name, minutes });
-    return response.data;
-  }
-
-  async getAPIKeys() {
-    const response = await this.client.get('/api/admin/api-keys');
+  async updateTimeWindow(name: string, index: number, windows: number[]) {
+    const response = await this.client.post('/admin/config/windows', {
+      windows
+    });
     return response.data;
   }
 
   async getSystemStats(): Promise<SystemStats> {
-    const response = await this.client.get('/api/admin/stats');
-    return response.data;
-  }
-
-  async resetSystem() {
-    const response = await this.client.post('/api/admin/reset');
+    const response = await this.client.get('/admin/health');
     return response.data;
   }
 

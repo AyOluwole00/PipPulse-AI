@@ -6,10 +6,14 @@ Provides REST API for managing PipPulse AI system configuration:
 - Source credibility weights
 - Time window settings
 - Confidence thresholds
+- System health metrics
 
 Security: All endpoints should be protected by authentication middleware.
 """
 
+import os
+import psutil
+from datetime import datetime
 from typing import Any, Dict, List
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
@@ -18,6 +22,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/admin", tags=["admin"])
+
+# System startup time (for uptime calculation)
+STARTUP_TIME = datetime.now()
 
 # In-memory configuration storage (replace with database in production)
 CONFIG = {
@@ -53,6 +60,47 @@ class WeightUpdate(BaseModel):
 class WindowsUpdate(BaseModel):
     """Time windows update request."""
     windows: List[int] = Field(..., example=[900, 3600, 14400])
+
+
+def get_system_stats() -> Dict[str, Any]:
+    """Get current system resource statistics."""
+    try:
+        process = psutil.Process(os.getpid())
+        memory_info = process.memory_info()
+        cpu_percent = process.cpu_percent(interval=0.1)
+        
+        # Calculate uptime
+        uptime = (datetime.now() - STARTUP_TIME).total_seconds()
+        
+        # Get total system memory for percentage calculation
+        total_memory = psutil.virtual_memory().total
+        memory_percent = (memory_info.rss / total_memory) * 100
+        
+        # Determine health status
+        status = "healthy"
+        if cpu_percent > 75 or memory_percent > 80:
+            status = "degraded"
+        elif cpu_percent > 90 or memory_percent > 95:
+            status = "unhealthy"
+        
+        return {
+            "cpu_percent": cpu_percent,
+            "memory_mb": memory_info.rss / 1024 / 1024,
+            "memory_percent": memory_percent,
+            "uptime_seconds": int(uptime),
+            "status": status,
+            "last_update": datetime.now().isoformat()
+        }
+    except Exception as e:
+        logger.warning(f"Failed to collect system stats: {e}")
+        return {
+            "cpu_percent": 0,
+            "memory_mb": 0,
+            "memory_percent": 0,
+            "uptime_seconds": 0,
+            "status": "unknown",
+            "last_update": datetime.now().isoformat()
+        }
 
 
 @router.get("/config")
@@ -213,6 +261,16 @@ async def get_sources() -> Dict[str, List[str]]:
 
 
 @router.get("/health")
-async def health() -> Dict[str, str]:
-    """Health check endpoint."""
-    return {"status": "healthy", "service": "admin-api"}
+async def health() -> Dict[str, Any]:
+    """
+    Health check endpoint with system metrics.
+    
+    Returns:
+        System status and resource metrics
+    """
+    stats = get_system_stats()
+    return {
+        "status": stats["status"],
+        "service": "admin-api",
+        **stats
+    }
