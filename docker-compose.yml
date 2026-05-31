@@ -65,7 +65,7 @@ services:
 
   # InfluxDB - Time-series data
   influxdb:
-    image: influxdb:2.7-alpine
+    image: influxdb
     container_name: pippulse-influxdb
     restart: unless-stopped
     ports:
@@ -104,13 +104,13 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - ENVIRONMENT=production
-      - MONGODB_URI=mongodb://${MONGO_USERNAME:-pippulse}:${MONGO_PASSWORD:-pippulse123}@mongodb:27017/${MONGO_DATABASE:-pippulse}
+      - MONGODB_URI= mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@cluster0.wj77ll9.mongodb.net/?appName=Cluster0
       - REDIS_URI=redis://redis:6379/0
-      - POSTGRES_URI=postgresql+asyncpg://${POSTGRES_USER:-pippulse}:${POSTGRES_PASSWORD:-pippulse123}@postgres:5432/${POSTGRES_DB:-pippulse}
+      - POSTGRES_URI=postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       - INFLUXDB_URL=http://influxdb:8086
-      - INFLUXDB_TOKEN=${INFLUXDB_TOKEN:-pippulse-super-secret-token-change-in-production}
-      - INFLUXDB_ORG=${INFLUXDB_ORG:-pippulse}
-      - INFLUXDB_BUCKET=${INFLUXDB_BUCKET:-signals}
+      - INFLUXDB_TOKEN=${INFLUXDB_TOKEN}
+      - INFLUXDB_ORG=${INFLUXDB_ORG}
+      - INFLUXDB_BUCKET=${INFLUXDB_BUCKET}
       - NEWSAPI_KEY=${NEWSAPI_KEY}
       - ALPHAVANTAGE_API_KEY=${ALPHAVANTAGE_API_KEY}
       - TWITTER_BEARER_TOKEN=${TWITTER_BEARER_TOKEN}
