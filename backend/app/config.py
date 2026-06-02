@@ -6,15 +6,16 @@ Handles environment variables and application settings
 from typing import List, Optional
 from pydantic_settings import BaseSettings
 from pydantic import Field
+import os
 
 
 class Settings(BaseSettings):
+
     """Application settings loaded from environment variables"""
 
     # Environment
     environment: str = Field(default="development", env="ENVIRONMENT")
     debug: bool = Field(default=False, env="DEBUG")
-
     # MongoDB Configuration
     mongodb_uri: str = Field(
         default="mongodb://localhost:27017/pippulse",

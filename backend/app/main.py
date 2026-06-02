@@ -5,74 +5,28 @@ Main entry point for the PipPulse AI backend API
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
-from typing import List, Optional
-import logging
-import asyncio
-from datetime import datetime
-
-from app.config import get_settings
-from app.api import signals, news, admin, health, websocket, backtesting
-from app.services.realtime_service import listen_for_events
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
-
-# Get settings
-settings = get_settings()
-
+from app.database import init_databases, close_databases
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Application lifespan manager"""
     # Startup
-    logger.info("Starting PipPulse AI backend...")
-    try:
-        from app.database import connect_all_databases
-        await connect_all_databases()
-        logger.info("Databases initialized")
-        app.state.realtime_stop = asyncio.Event()
-        app.state.realtime_task = asyncio.create_task(
-            listen_for_events(app.state.realtime_stop)
-        )
-    except Exception as e:
-        logger.error(f"Failed to initialize databases: {e}")
-        raise
-
+    await init_databases()
     yield
-
     # Shutdown
-    logger.info("Shutting down PipPulse AI backend...")
-    try:
-        if hasattr(app.state, "realtime_stop"):
-            app.state.realtime_stop.set()
-        if hasattr(app.state, "realtime_task"):
-            app.state.realtime_task.cancel()
-        from app.database import disconnect_all_databases
-        await disconnect_all_databases()
-    except Exception as e:
-        logger.error(f"Error during shutdown: {e}")
+    await close_databases()
 
-
-# Create FastAPI app
 app = FastAPI(
     title="PipPulse AI",
     description="Real-Time AI Sentiment Analysis Engine for Forex News Trading",
     version="1.0.0",
-    docs_url="/docs",
-    redoc_url="/redoc",
     lifespan=lifespan
 )
 
-# Configure CORS
+# CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,
+    allow_origins=["http://localhost:3000", "http://localhost:8000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
