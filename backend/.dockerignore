@@ -1,0 +1,50 @@
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Node (if any)
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Misc
+.pytest_cache
+.mypy_cache
+.cache
+*.log
