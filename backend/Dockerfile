@@ -20,7 +20,6 @@ RUN pip install --no-cache-dir --default-timeout=1000 -r requirements-ml.txt || 
 
 # Copy application code
 COPY app ./app
-COPY main.py .
 
 # Download spaCy model
 RUN python -m spacy download en_core_web_sm
@@ -29,5 +28,5 @@ RUN python -m spacy download en_core_web_sm
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 
-# Run application
+# Run application (app/main.py, not ./main.py)
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
