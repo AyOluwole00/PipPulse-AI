@@ -4,11 +4,11 @@ Handles connections to MongoDB, Redis, PostgreSQL, and InfluxDB
 """
 
 import os
-from motor.motor_asyncio import AsyncClient as AsyncMongoClient, AsyncDatabase as AsyncMongoDB
+from motor.motor_asyncio import AsyncIOMotorClient as AsyncMongoClient, AsyncIOMotorDatabase as AsyncMongoDB
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-import aioredis
+import redis.asyncio as aioredis
 from influxdb_client import InfluxDBClient
 from influxdb_client.client.write_api import SYNCHRONOUS
 
