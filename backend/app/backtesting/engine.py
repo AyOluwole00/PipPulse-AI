@@ -23,10 +23,11 @@ from app.database import (
     get_mongodb,
     get_influxdb_query_api,
     get_influxdb_write_api,
+    get_influxdb_price_client,
     get_postgres_session,
 )
 from app.config import get_settings
-from influxdb_client import Point
+from tinyflux import Point
 from app.models.tables import backtest_runs
 from sqlalchemy import insert
 
@@ -116,8 +117,8 @@ class PriceDataFetcher:
     ) -> List[PriceData]:
         """Fetch historical price data for a currency pair"""
         try:
-            # Try to get from InfluxDB first
-            influxdb = get_influxdb_query_api()
+            # Try to get from TinyFlux first
+            influxdb = get_influxdb_price_client()
             if influxdb:
                 cached = await self._fetch_from_influxdb(
                     influxdb,
@@ -152,38 +153,33 @@ class PriceDataFetcher:
         end_date: datetime,
         interval: str
     ) -> List[PriceData]:
-        """Fetch price data from InfluxDB cache"""
+        """Fetch price data from TinyFlux cache"""
         try:
-            query = f'''
-            from(bucket: "{self.settings.influxdb_price_bucket}")
-              |> range(start: {start_date.isoformat()}Z, stop: {end_date.isoformat()}Z)
-              |> filter(fn: (r) => r["_measurement"] == "forex_prices")
-              |> filter(fn: (r) => r["pair"] == "{currency_pair}")
-              |> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
-              |> sort(columns: ["_time"])
-            '''
-
-            result = influxdb.query(query)
-
+            from tinyflux import TimeQuery
+            
+            # Create time range query
+            query = TimeQuery(start=start_date, end=end_date)
+            
+            # Query for specific currency pair
             price_data = []
-            for table in result:
-                for record in table.records:
-                    values = record.values
+            for point in influxdb.search(query):
+                # Check if this point matches our currency pair
+                if point.tags.get("pair") == currency_pair:
                     price_data.append(PriceData(
-                        timestamp=record.get_time(),
-                        open=values.get("open", 0),
-                        high=values.get("high", 0),
-                        low=values.get("low", 0),
-                        close=values.get("close", 0),
-                        volume=values.get("volume", 0)
+                        timestamp=point.time,
+                        open=point.fields.get("open", 0),
+                        high=point.fields.get("high", 0),
+                        low=point.fields.get("low", 0),
+                        close=point.fields.get("close", 0),
+                        volume=point.fields.get("volume", 0)
                     ))
 
             if price_data:
-                logger.info(f"Retrieved {len(price_data)} cached price records for {currency_pair} from InfluxDB")
+                logger.info(f"Retrieved {len(price_data)} cached price records for {currency_pair} from TinyFlux")
             return price_data
 
         except Exception as e:
-            logger.warning(f"Error fetching from InfluxDB cache for {currency_pair}: {e}")
+            logger.warning(f"Error fetching from TinyFlux cache for {currency_pair}: {e}")
             return []
 
     async def _fetch_from_alpha_vantage(
@@ -284,36 +280,34 @@ class PriceDataFetcher:
         return price_data
 
     async def _write_to_influxdb(self, currency_pair: str, price_data: List[PriceData]) -> None:
-        """Persist price data to InfluxDB for caching"""
-        write_api = get_influxdb_write_api()
-        if not write_api or not price_data:
-            logger.debug(f"Skipping InfluxDB write: write_api={bool(write_api)}, data_points={len(price_data)}")
+        """Persist price data to TinyFlux for caching"""
+        price_db = get_influxdb_price_client()
+        if not price_db or not price_data:
+            logger.debug(f"Skipping TinyFlux write: price_db={bool(price_db)}, data_points={len(price_data)}")
             return
 
         try:
             points = []
             for item in price_data:
-                point = (
-                    Point("forex_prices")
-                    .tag("pair", currency_pair)
-                    .tag("timeframe", "intraday")
-                    .field("open", float(item.open))
-                    .field("high", float(item.high))
-                    .field("low", float(item.low))
-                    .field("close", float(item.close))
-                    .field("volume", float(item.volume))
-                    .time(item.timestamp)
+                point = Point(
+                    time=item.timestamp,
+                    measurement="forex_prices",
+                    tags={"pair": currency_pair, "timeframe": "intraday"},
+                    fields={
+                        "open": float(item.open),
+                        "high": float(item.high),
+                        "low": float(item.low),
+                        "close": float(item.close),
+                        "volume": float(item.volume)
+                    }
                 )
                 points.append(point)
 
-            write_api.write(
-                bucket=self.settings.influxdb_price_bucket,
-                org=self.settings.influxdb_org,
-                record=points
-            )
-            logger.info(f"Successfully wrote {len(points)} price records for {currency_pair} to InfluxDB")
+            # Insert all points
+            price_db.insert_multiple(points)
+            logger.info(f"Successfully wrote {len(points)} price records for {currency_pair} to TinyFlux")
         except Exception as e:
-            logger.error(f"Error writing to InfluxDB for {currency_pair}: {e}")
+            logger.error(f"Error writing to TinyFlux for {currency_pair}: {e}")
 
     @staticmethod
     def _aggregate_prices(price_data: List[PriceData], hours: int) -> List[PriceData]:
